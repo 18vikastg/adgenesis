@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery } from 'react-query';
 import { getDesigns, exportDesign } from '../services/api';
 import { fabric } from 'fabric';
@@ -57,7 +57,7 @@ const ExportPage = () => {
         }
       });
     }
-  }, [designs]);
+  }, [designs, previewData]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -74,24 +74,16 @@ const ExportPage = () => {
             >
               <option value="png">PNG</option>
               <option value="jpg">JPG</option>
-              <div className="aspect-square bg-gray-100 flex items-center justify-center">
-                {previewData[design.id] ? (
-                  <img
-                    src={previewData[design.id]}
-                    alt={design.prompt}
-                    className="w-full h-full object-cover"
-                  />
-                ) : design.preview_url ? (
-                  <img
-                    src={design.preview_url}
-                    alt={design.prompt}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="flex items-center justify-center h-full">
-                    <p className="text-gray-400">Loading preview...</p>
-                  </div>
-                )} Selected ({selectedDesigns.length})
+              <option value="svg">SVG</option>
+              <option value="pdf">PDF</option>
+            </select>
+          </div>
+          <button
+            onClick={handleExport}
+            disabled={selectedDesigns.length === 0}
+            className="bg-primary-600 text-white px-6 py-2 rounded-md font-semibold hover:bg-primary-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+          >
+            Export Selected ({selectedDesigns.length})
           </button>
         </div>
       </div>
@@ -109,14 +101,22 @@ const ExportPage = () => {
               onClick={() => toggleDesign(design.id)}
             >
               <div className="aspect-square bg-gray-100 flex items-center justify-center">
-                {design.preview_url ? (
+                {previewData[design.id] ? (
+                  <img
+                    src={previewData[design.id]}
+                    alt={design.prompt}
+                    className="w-full h-full object-cover"
+                  />
+                ) : design.preview_url ? (
                   <img
                     src={design.preview_url}
                     alt={design.prompt}
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <p className="text-gray-400">No preview</p>
+                  <div className="flex items-center justify-center h-full">
+                    <p className="text-gray-400">Loading preview...</p>
+                  </div>
                 )}
               </div>
               <div className="p-4">

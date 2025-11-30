@@ -216,9 +216,6 @@ const DesignStudioPage = () => {
               </div>
             </div>
           )}
-        </div>Export
-            </button>
-          </div>
         </div>
       </div>
     </div>
