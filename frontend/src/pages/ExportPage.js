@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useQuery } from 'react-query';
 import { getDesigns, exportDesign } from '../services/api';
+import { fabric } from 'fabric';
 
 const ExportPage = () => {
   const [selectedDesigns, setSelectedDesigns] = useState([]);
   const [exportFormat, setExportFormat] = useState('png');
+  const [previewData, setPreviewData] = useState({});
 
   const { data: designs } = useQuery('designs', getDesigns);
 
@@ -27,9 +29,35 @@ const ExportPage = () => {
         await exportDesign(designId, exportFormat);
       } catch (error) {
         console.error('Export failed:', error);
+        alert('Export failed. Please check if you have an active OpenAI API key with credits.');
       }
     }
   };
+
+  // Generate canvas previews for designs
+  useEffect(() => {
+    if (designs && designs.length > 0) {
+      designs.forEach((design) => {
+        if (design.canvas_data && !previewData[design.id]) {
+          try {
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = 200;
+            tempCanvas.height = 200;
+            const fabricCanvas = new fabric.Canvas(tempCanvas);
+            
+            fabricCanvas.loadFromJSON(design.canvas_data, () => {
+              fabricCanvas.renderAll();
+              const dataURL = fabricCanvas.toDataURL({ format: 'png' });
+              setPreviewData(prev => ({ ...prev, [design.id]: dataURL }));
+              fabricCanvas.dispose();
+            });
+          } catch (error) {
+            console.error('Error generating preview:', error);
+          }
+        }
+      });
+    }
+  }, [designs]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -46,16 +74,24 @@ const ExportPage = () => {
             >
               <option value="png">PNG</option>
               <option value="jpg">JPG</option>
-              <option value="svg">SVG</option>
-              <option value="pdf">PDF</option>
-            </select>
-          </div>
-          <button
-            onClick={handleExport}
-            disabled={selectedDesigns.length === 0}
-            className="bg-primary-600 text-white px-6 py-2 rounded-md font-semibold hover:bg-primary-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
-          >
-            Export Selected ({selectedDesigns.length})
+              <div className="aspect-square bg-gray-100 flex items-center justify-center">
+                {previewData[design.id] ? (
+                  <img
+                    src={previewData[design.id]}
+                    alt={design.prompt}
+                    className="w-full h-full object-cover"
+                  />
+                ) : design.preview_url ? (
+                  <img
+                    src={design.preview_url}
+                    alt={design.prompt}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="flex items-center justify-center h-full">
+                    <p className="text-gray-400">Loading preview...</p>
+                  </div>
+                )} Selected ({selectedDesigns.length})
           </button>
         </div>
       </div>
