@@ -43,6 +43,93 @@ class DesignResponse(BaseModel):
     layout: dict = {}
 
 
+def generate_fallback_design(prompt: str, platform: str, format: str, specs: dict) -> dict:
+    """Generate a professional-looking design when ML model fails"""
+    import hashlib
+    import re
+    
+    # Extract keywords from prompt
+    words = re.findall(r'\w+', prompt.lower())
+    keywords = [w for w in words if len(w) > 3][:3]
+    
+    # Color schemes based on keywords
+    color_schemes = {
+        "tech": {"bg": "#1a1a2e", "primary": "#3b82f6", "text": "#ffffff", "accent": "#60a5fa"},
+        "fashion": {"bg": "#ff6b9d", "primary": "#ffe66d", "text": "#ffffff", "accent": "#ff1744"},
+        "sale": {"bg": "#dc2626", "primary": "#fbbf24", "text": "#ffffff", "accent": "#000000"},
+        "food": {"bg": "#fef3c7", "primary": "#ef4444", "text": "#78350f", "accent": "#92400e"},
+        "business": {"bg": "#0a66c2", "primary": "#ffffff", "text": "#ffffff", "accent": "#94a3b8"},
+        "default": {"bg": "#ffffff", "primary": "#3b82f6", "text": "#000000", "accent": "#6b7280"},
+    }
+    
+    # Select color scheme
+    scheme = color_schemes["default"]
+    for keyword in keywords:
+        if keyword in color_schemes:
+            scheme = color_schemes[keyword]
+            break
+    
+    # Create headline (first 40 chars or first sentence)
+    headline = prompt[:40] if len(prompt) <= 40 else prompt.split('.')[0][:40]
+    
+    # Build design elements
+    elements = []
+    width = specs.get("width", 1080)
+    height = specs.get("height", 1080)
+    
+    # Add main headline
+    elements.append({
+        "type": "text",
+        "text": headline.upper() if "sale" in keywords else headline.title(),
+        "x": width * 0.1,
+        "y": height * 0.25,
+        "fontSize": 64 if width > 800 else 48,
+        "color": scheme["text"],
+        "fontFamily": "Arial Black" if "sale" in keywords else "Arial",
+        "fontWeight": "bold"
+    })
+    
+    # Add subtext
+    subtext = f"Powered by AI • {platform.title()}"
+    elements.append({
+        "type": "text",
+        "text": subtext,
+        "x": width * 0.1,
+        "y": height * 0.45,
+        "fontSize": 24,
+        "color": scheme["accent"],
+        "fontFamily": "Arial"
+    })
+    
+    # Add CTA button
+    elements.append({
+        "type": "rectangle",
+        "x": width * 0.1,
+        "y": height * 0.65,
+        "width": 300,
+        "height": 70,
+        "color": scheme["primary"],
+        "borderRadius": 8
+    })
+    
+    elements.append({
+        "type": "text",
+        "text": "Learn More" if "business" in keywords else "Shop Now",
+        "x": width * 0.1 + 80,
+        "y": height * 0.65 + 22,
+        "fontSize": 24,
+        "color": scheme["bg"] if scheme["bg"] != "#ffffff" else "#000000",
+        "fontFamily": "Arial",
+        "fontWeight": "600"
+    })
+    
+    return {
+        "background_color": scheme["bg"],
+        "elements": elements,
+        "layout": {"type": "fallback", "prompt": prompt}
+    }
+
+
 def load_model(model_path: str, use_lora: bool = False):
     """Load the fine-tuned model"""
     global model, tokenizer, generation_config
@@ -106,26 +193,37 @@ def generate_design_spec(prompt: str, platform: str, format: str) -> dict:
     # Get platform specs
     specs = config.PLATFORM_SPECS.get(platform, {}).get(format, {"width": 1080, "height": 1080})
     
-    # Create instruction
-    instruction = f"""Generate a JSON design specification for an advertisement.
-Platform: {platform}
-Format: {format} ({specs['width']}x{specs['height']})
+    # Create instruction - SIMPLIFIED for better GPT-2 results
+    instruction = f"""Design a {platform} ad in {format} format.
 Prompt: {prompt}
+Size: {specs['width']}x{specs['height']}
 
-Return a valid JSON with background_color and elements array."""
+JSON output:"""
     
     # Format as training format
-    input_text = f"### Instruction:\n{instruction}\n\n### Response:\n"
+    input_text = f"{instruction}\n"
     
     # Tokenize
-    inputs = tokenizer(input_text, return_tensors="pt", padding=True, truncation=True)
+    inputs = tokenizer(input_text, return_tensors="pt", padding=True, truncation=True, max_length=512)
     inputs = {k: v.to(model.device) for k, v in inputs.items()}
+    
+    # Generate with stricter parameters for better JSON
+    generation_config_local = GenerationConfig(
+        max_new_tokens=256,  # Shorter for better control
+        temperature=0.3,      # Lower for more deterministic
+        top_p=0.9,
+        top_k=40,
+        repetition_penalty=1.2,
+        do_sample=True,
+        pad_token_id=tokenizer.pad_token_id,
+        eos_token_id=tokenizer.eos_token_id,
+    )
     
     # Generate
     with torch.no_grad():
         outputs = model.generate(
             **inputs,
-            generation_config=generation_config,
+            generation_config=generation_config_local,
         )
     
     # Decode
@@ -133,47 +231,29 @@ Return a valid JSON with background_color and elements array."""
     
     # Extract JSON from response
     try:
-        # Get text after "### Response:"
-        response_text = generated_text.split("### Response:")[-1].strip()
-        
-        # Try to find JSON in the response
-        json_start = response_text.find("{")
-        json_end = response_text.rfind("}") + 1
+        # Look for JSON patterns
+        json_start = generated_text.find("{")
+        json_end = generated_text.rfind("}") + 1
         
         if json_start != -1 and json_end > json_start:
-            json_text = response_text[json_start:json_end]
+            json_text = generated_text[json_start:json_end]
             design_spec = json.loads(json_text)
-        else:
-            # Fallback: try parsing the whole response
-            design_spec = json.loads(response_text)
-        
-        # Ensure required fields
-        if "background_color" not in design_spec:
-            design_spec["background_color"] = "#ffffff"
-        if "elements" not in design_spec:
-            design_spec["elements"] = []
-        
-        return design_spec
+            
+            # Ensure required fields
+            if "background_color" not in design_spec:
+                design_spec["background_color"] = "#ffffff"
+            if "elements" not in design_spec:
+                design_spec["elements"] = []
+            
+            return design_spec
     
-    except json.JSONDecodeError as e:
+    except (json.JSONDecodeError, ValueError) as e:
         print(f"❌ Failed to parse JSON: {e}")
-        print(f"Generated text: {generated_text}")
-        
-        # Return fallback design
-        return {
-            "background_color": "#ffffff",
-            "elements": [
-                {
-                    "type": "text",
-                    "text": prompt[:100],
-                    "x": 100,
-                    "y": 100,
-                    "fontSize": 48,
-                    "color": "#000000",
-                    "fontFamily": "Arial",
-                }
-            ],
-        }
+        print(f"Generated text: {generated_text[:500]}")
+    
+    # FALLBACK: Generate a proper design programmatically
+    print("📝 Using fallback design generation")
+    return generate_fallback_design(prompt, platform, format, specs)
 
 
 @app.get("/")

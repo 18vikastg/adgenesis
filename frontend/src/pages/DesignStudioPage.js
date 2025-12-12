@@ -57,9 +57,10 @@ const DesignStudioPage = () => {
   useEffect(() => {
     if (canvasRef.current && !fabricCanvasRef.current) {
       const canvas = new fabric.Canvas(canvasRef.current, {
-        width: 600,
-        height: 600,
+        width: 800,
+        height: 800,
         backgroundColor: '#ffffff',
+        preserveObjectStacking: true,
       });
       fabricCanvasRef.current = canvas;
     }
@@ -78,12 +79,33 @@ const DesignStudioPage = () => {
       try {
         fabricCanvasRef.current.clear();
         if (selectedDesign.canvas_data) {
+          // Set canvas size from design data
+          const designWidth = selectedDesign.canvas_data.width || 1080;
+          const designHeight = selectedDesign.canvas_data.height || 1080;
+          
+          // Scale to fit 800x800 canvas
+          const scale = Math.min(800 / designWidth, 800 / designHeight);
+          
           fabricCanvasRef.current.loadFromJSON(selectedDesign.canvas_data, () => {
+            // Scale all objects to fit
+            fabricCanvasRef.current.getObjects().forEach(obj => {
+              obj.scaleX = (obj.scaleX || 1) * scale;
+              obj.scaleY = (obj.scaleY || 1) * scale;
+              obj.left = obj.left * scale;
+              obj.top = obj.top * scale;
+              obj.setCoords();
+            });
+            
+            fabricCanvasRef.current.setBackgroundColor(
+              selectedDesign.canvas_data.background || '#ffffff',
+              fabricCanvasRef.current.renderAll.bind(fabricCanvasRef.current)
+            );
             fabricCanvasRef.current.renderAll();
           });
         }
       } catch (error) {
         console.error('Error loading canvas data:', error);
+        alert('Failed to load design. Please try again.');
       }
     }
   }, [selectedDesign]);
