@@ -45,6 +45,14 @@ build/
 *.env
 !.env.example
 
+# ML Models (too large for git)
+ml_pipeline/models/base/
+ml_pipeline/models/fine_tuned/
+*.safetensors
+*.bin
+*.pt
+*.pth
+
 # IDE
 .vscode/
 .idea/

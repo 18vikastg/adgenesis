@@ -18,6 +18,12 @@ const Navbar = () => {
                 Design Studio
               </Link>
               <Link
+                to="/editor"
+                className="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium"
+              >
+                Editor
+              </Link>
+              <Link
                 to="/guidelines"
                 className="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium"
               >

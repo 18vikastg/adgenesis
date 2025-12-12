@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  ml-service:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: adgenesis-ml-service
+    ports:
+      - "8001:8001"
+    volumes:
+      - ../models:/app/models
+      - ../data:/app/data
+    environment:
+      - DEVICE=cuda  # Change to 'cpu' if no GPU
+      - HUGGINGFACE_TOKEN=${HUGGINGFACE_TOKEN:-}
+    restart: unless-stopped
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - adgenesis-network
+
+networks:
+  adgenesis-network:
+    driver: bridge

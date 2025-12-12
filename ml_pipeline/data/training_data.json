@@ -1,0 +1,321 @@
+[
+  {
+    "prompt": "Create a modern tech startup ad for Meta square format with bold typography and gradient background",
+    "platform": "meta",
+    "format": "square",
+    "response": {
+      "background_color": "#1a1a2e",
+      "elements": [
+        {
+          "type": "text",
+          "text": "Launch Your Startup",
+          "x": 100,
+          "y": 200,
+          "fontSize": 64,
+          "color": "#ffffff",
+          "fontFamily": "Montserrat",
+          "fontWeight": "bold"
+        },
+        {
+          "type": "text",
+          "text": "Join thousands of founders",
+          "x": 100,
+          "y": 300,
+          "fontSize": 24,
+          "color": "#94a3b8",
+          "fontFamily": "Inter"
+        },
+        {
+          "type": "rectangle",
+          "x": 100,
+          "y": 400,
+          "width": 300,
+          "height": 60,
+          "color": "#3b82f6",
+          "borderRadius": 8
+        },
+        {
+          "type": "text",
+          "text": "Get Started Free",
+          "x": 150,
+          "y": 415,
+          "fontSize": 20,
+          "color": "#ffffff",
+          "fontFamily": "Inter",
+          "fontWeight": "600"
+        }
+      ],
+      "layout": {
+        "grid": "3x3",
+        "alignment": "left"
+      }
+    }
+  },
+  {
+    "prompt": "Design a fashion sale ad for Instagram story with vibrant colors and large discount text",
+    "platform": "meta",
+    "format": "story",
+    "response": {
+      "background_color": "#ff6b9d",
+      "elements": [
+        {
+          "type": "text",
+          "text": "SUMMER SALE",
+          "x": 100,
+          "y": 400,
+          "fontSize": 80,
+          "color": "#ffffff",
+          "fontFamily": "Bebas Neue",
+          "fontWeight": "bold"
+        },
+        {
+          "type": "text",
+          "text": "50% OFF",
+          "x": 100,
+          "y": 550,
+          "fontSize": 120,
+          "color": "#ffe66d",
+          "fontFamily": "Impact",
+          "fontWeight": "bold"
+        },
+        {
+          "type": "text",
+          "text": "Shop Now",
+          "x": 100,
+          "y": 750,
+          "fontSize": 40,
+          "color": "#ffffff",
+          "fontFamily": "Inter",
+          "fontWeight": "600"
+        },
+        {
+          "type": "circle",
+          "x": 800,
+          "y": 1200,
+          "width": 150,
+          "height": 150,
+          "color": "#ffe66d"
+        }
+      ]
+    }
+  },
+  {
+    "prompt": "Create a professional B2B software ad for LinkedIn landscape with clean design",
+    "platform": "linkedin",
+    "format": "landscape",
+    "response": {
+      "background_color": "#0a66c2",
+      "elements": [
+        {
+          "type": "rectangle",
+          "x": 0,
+          "y": 0,
+          "width": 600,
+          "height": 627,
+          "color": "#0a66c2"
+        },
+        {
+          "type": "rectangle",
+          "x": 600,
+          "y": 0,
+          "width": 600,
+          "height": 627,
+          "color": "#ffffff"
+        },
+        {
+          "type": "text",
+          "text": "Enterprise CRM",
+          "x": 50,
+          "y": 200,
+          "fontSize": 56,
+          "color": "#ffffff",
+          "fontFamily": "Arial",
+          "fontWeight": "bold"
+        },
+        {
+          "type": "text",
+          "text": "Trusted by 10,000+ companies",
+          "x": 50,
+          "y": 280,
+          "fontSize": 20,
+          "color": "#94a3b8",
+          "fontFamily": "Arial"
+        },
+        {
+          "type": "text",
+          "text": "Schedule Demo",
+          "x": 650,
+          "y": 280,
+          "fontSize": 32,
+          "color": "#0a66c2",
+          "fontFamily": "Arial",
+          "fontWeight": "600"
+        }
+      ]
+    }
+  },
+  {
+    "prompt": "Design a food delivery app promo for Google Ads square format with appetizing imagery placeholders",
+    "platform": "google",
+    "format": "square",
+    "response": {
+      "background_color": "#fef3c7",
+      "elements": [
+        {
+          "type": "text",
+          "text": "Hungry?",
+          "x": 100,
+          "y": 150,
+          "fontSize": 96,
+          "color": "#78350f",
+          "fontFamily": "Poppins",
+          "fontWeight": "bold"
+        },
+        {
+          "type": "text",
+          "text": "Get food delivered in 30 mins",
+          "x": 100,
+          "y": 280,
+          "fontSize": 28,
+          "color": "#92400e",
+          "fontFamily": "Inter"
+        },
+        {
+          "type": "rectangle",
+          "x": 100,
+          "y": 400,
+          "width": 400,
+          "height": 80,
+          "color": "#ef4444",
+          "borderRadius": 12
+        },
+        {
+          "type": "text",
+          "text": "Order Now - 50% Off",
+          "x": 180,
+          "y": 425,
+          "fontSize": 28,
+          "color": "#ffffff",
+          "fontFamily": "Inter",
+          "fontWeight": "700"
+        }
+      ]
+    }
+  },
+  {
+    "prompt": "Create a minimalist fitness app ad for Meta portrait with motivational text",
+    "platform": "meta",
+    "format": "portrait",
+    "response": {
+      "background_color": "#000000",
+      "elements": [
+        {
+          "type": "text",
+          "text": "TRANSFORM",
+          "x": 100,
+          "y": 300,
+          "fontSize": 72,
+          "color": "#ffffff",
+          "fontFamily": "Oswald",
+          "fontWeight": "bold"
+        },
+        {
+          "type": "text",
+          "text": "YOUR BODY",
+          "x": 100,
+          "y": 400,
+          "fontSize": 72,
+          "color": "#10b981",
+          "fontFamily": "Oswald",
+          "fontWeight": "bold"
+        },
+        {
+          "type": "text",
+          "text": "30-day challenge starts today",
+          "x": 100,
+          "y": 520,
+          "fontSize": 24,
+          "color": "#d1d5db",
+          "fontFamily": "Inter"
+        },
+        {
+          "type": "rectangle",
+          "x": 100,
+          "y": 650,
+          "width": 280,
+          "height": 70,
+          "color": "#10b981",
+          "borderRadius": 35
+        },
+        {
+          "type": "text",
+          "text": "Start Free Trial",
+          "x": 150,
+          "y": 670,
+          "fontSize": 24,
+          "color": "#000000",
+          "fontFamily": "Inter",
+          "fontWeight": "600"
+        }
+      ]
+    }
+  },
+  {
+    "prompt": "Design an e-commerce holiday sale ad for Google landscape with festive colors",
+    "platform": "google",
+    "format": "landscape",
+    "response": {
+      "background_color": "#dc2626",
+      "elements": [
+        {
+          "type": "text",
+          "text": "BLACK FRIDAY",
+          "x": 100,
+          "y": 150,
+          "fontSize": 64,
+          "color": "#ffffff",
+          "fontFamily": "Impact",
+          "fontWeight": "bold"
+        },
+        {
+          "type": "text",
+          "text": "UP TO 70% OFF",
+          "x": 100,
+          "y": 240,
+          "fontSize": 48,
+          "color": "#fbbf24",
+          "fontFamily": "Arial Black",
+          "fontWeight": "bold"
+        },
+        {
+          "type": "text",
+          "text": "Limited Time Only",
+          "x": 100,
+          "y": 320,
+          "fontSize": 24,
+          "color": "#ffffff",
+          "fontFamily": "Arial"
+        },
+        {
+          "type": "rectangle",
+          "x": 100,
+          "y": 400,
+          "width": 250,
+          "height": 60,
+          "color": "#000000",
+          "borderRadius": 8
+        },
+        {
+          "type": "text",
+          "text": "Shop Deals",
+          "x": 140,
+          "y": 418,
+          "fontSize": 26,
+          "color": "#ffffff",
+          "fontFamily": "Arial",
+          "fontWeight": "bold"
+        }
+      ]
+    }
+  }
+]

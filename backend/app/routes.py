@@ -80,6 +80,31 @@ async def get_design(design_id: int):
     return design
 
 
+@router.put("/designs/{design_id}", response_model=DesignResponse)
+async def update_design(design_id: int, update_data: dict):
+    """Update an existing design with edits"""
+    design = next((d for d in in_memory_designs if d["id"] == design_id), None)
+    if not design:
+        raise HTTPException(status_code=404, detail="Design not found")
+    
+    try:
+        from datetime import datetime
+        # Update design fields
+        for key, value in update_data.items():
+            if key != "id" and key != "created_at":
+                design[key] = value
+        
+        # Update metadata
+        if "metadata" not in design:
+            design["metadata"] = {}
+        design["metadata"]["updatedAt"] = datetime.utcnow().isoformat()
+        design["metadata"]["version"] = design["metadata"].get("version", 1) + 1
+        
+        return design
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @router.get("/designs/{design_id}/export")
 async def export_design(
     design_id: int,

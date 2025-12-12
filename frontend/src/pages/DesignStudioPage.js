@@ -37,7 +37,7 @@ const DesignStudioPage = () => {
 
   const handleExport = () => {
     if (selectedDesign) {
-      window.open(`${process.env.REACT_APP_API_URL}/designs/${selectedDesign.id}/export?format=png`, '_blank');
+      window.open(`${process.env.REACT_APP_API_URL}/api/designs/${selectedDesign.id}/export?format=png`, '_blank');
     }
   };
 
@@ -96,30 +96,27 @@ const DesignStudioPage = () => {
         {/* Left Panel - Controls */}
         <div className="space-y-6">
           <div className="bg-white p-6 rounded-lg shadow">
-          {/* Recent Designs */}
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h2 className="text-xl font-semibold mb-4">Recent Designs</h2>
-            <div className="space-y-2">
-              {designs?.length > 0 ? (
-                designs.slice(0, 5).map((design) => (
-                  <div
-                    key={design.id}
-                    onClick={() => handleDesignClick(design)}
-                    className={`p-3 border rounded hover:bg-gray-50 cursor-pointer ${
-                      selectedDesign?.id === design.id ? 'border-primary-500 bg-primary-50' : 'border-gray-200'
-                    }`}
-                  >
-                    <p className="text-sm font-medium">{design.prompt}</p>
-                    <p className="text-xs text-gray-500">
-                      {design.platform} • {design.format}
-                    </p>
-                  </div>
-                ))
-              ) : (
-                <p className="text-gray-500 text-sm">No designs yet. Create your first one!</p>
-              )}
-            </div>
-          </div><select
+            <h2 className="text-xl font-semibold mb-4">Generate New Design</h2>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Describe your ad
+                </label>
+                <textarea
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500"
+                  rows="4"
+                  placeholder="E.g., Create a summer sale ad with beach theme, 50% off text, and call-to-action button"
+                  value={prompt}
+                  onChange={(e) => setPrompt(e.target.value)}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Platform
+                </label>
+                <select
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500"
                   value={platform}
                   onChange={(e) => setPlatform(e.target.value)}
@@ -164,7 +161,10 @@ const DesignStudioPage = () => {
                 designs.slice(0, 5).map((design) => (
                   <div
                     key={design.id}
-                    className="p-3 border border-gray-200 rounded hover:bg-gray-50 cursor-pointer"
+                    onClick={() => handleDesignClick(design)}
+                    className={`p-3 border rounded hover:bg-gray-50 cursor-pointer ${
+                      selectedDesign?.id === design.id ? 'border-primary-500 bg-primary-50' : 'border-gray-200'
+                    }`}
                   >
                     <p className="text-sm font-medium">{design.prompt}</p>
                     <p className="text-xs text-gray-500">
@@ -176,6 +176,9 @@ const DesignStudioPage = () => {
                 <p className="text-gray-500 text-sm">No designs yet. Create your first one!</p>
               )}
             </div>
+          </div>
+        </div>
+
         {/* Right Panel - Canvas Preview */}
         <div className="bg-white p-6 rounded-lg shadow">
           <h2 className="text-xl font-semibold mb-4">

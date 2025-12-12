@@ -1,0 +1,27 @@
+# Core ML Libraries
+torch>=2.1.0
+transformers>=4.36.0
+accelerate>=0.25.0
+peft>=0.7.0  # For LoRA fine-tuning
+bitsandbytes>=0.41.0  # For quantization
+
+# Training & Evaluation
+datasets>=2.15.0
+evaluate>=0.4.0
+scikit-learn>=1.3.0
+wandb>=0.16.0  # Optional: for experiment tracking
+
+# Inference Server
+fastapi>=0.104.1
+uvicorn[standard]>=0.24.0
+pydantic>=2.5.2
+
+# Utilities
+numpy>=1.24.0
+tqdm>=4.66.0
+sentencepiece>=0.1.99  # For Llama tokenizer
+protobuf>=4.25.0
+
+# Optional: For advanced features
+# flash-attn>=2.3.0  # Faster attention (requires CUDA)
+# vllm>=0.2.0  # Very fast inference

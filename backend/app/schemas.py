@@ -24,6 +24,54 @@ class ExportFormat(str, Enum):
     PDF = "pdf"
 
 
+class ElementType(str, Enum):
+    IMAGE = "image"
+    TEXT = "text"
+    SHAPE = "shape"
+    CTA_BUTTON = "cta_button"
+
+
+class DesignElement(BaseModel):
+    id: str
+    type: ElementType
+    x: float
+    y: float
+    width: float
+    height: float
+    rotation: float = 0
+    # Image-specific
+    src: Optional[str] = None
+    crop: Optional[Dict[str, float]] = None
+    # Text-specific
+    content: Optional[str] = None
+    fontFamily: Optional[str] = None
+    fontSize: Optional[float] = None
+    fontWeight: Optional[str] = None
+    fill: Optional[str] = None
+    textAlign: Optional[str] = None
+    editable: bool = True
+    # Shape-specific
+    shape: Optional[str] = None  # rectangle, circle, etc.
+
+
+class CTAConfig(BaseModel):
+    text: str
+    style: str = "primary"  # primary, secondary
+    color: str = "#0066FF"
+    ctaLink: Optional[str] = None
+
+
+class LayoutConfig(BaseModel):
+    grid: Optional[str] = None
+    artifact_positions: List[Dict[str, Any]] = []
+
+
+class DesignMetadata(BaseModel):
+    createdAt: datetime
+    updatedAt: datetime
+    version: int = 1
+
+
 # Design Schemas
 class DesignCreateRequest(BaseModel):
     prompt: str = Field(..., min_length=1, max_length=1000)

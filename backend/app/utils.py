@@ -9,6 +9,7 @@ import PyPDF2
 import json
 
 from app.models import User, Base
+from app.model_adapter import get_model_adapter
 
 load_dotenv()
 
@@ -17,8 +18,12 @@ DATABASE_URL = os.getenv("DATABASE_URL")
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# OpenAI setup
-openai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+# Model setup (OpenAI or Custom ML)
+MODEL_PROVIDER = os.getenv("MODEL_PROVIDER", "openai")  # "openai" or "custom"
+model_adapter = get_model_adapter()
+
+# Legacy OpenAI client (for backward compatibility if needed)
+openai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY")) if MODEL_PROVIDER == "openai" else None
 
 # Demo user ID
 DEMO_USER_ID = os.getenv("DEMO_USER_ID", "demo-user-001")
@@ -69,36 +74,20 @@ PLATFORM_SPECS = {
 
 async def generate_ai_design(prompt: str, platform: str, format: str) -> dict:
     """
-    Generate ad design using OpenAI API
+    Generate ad design using AI model (OpenAI or Custom ML)
     Returns Fabric.js canvas JSON structure
     """
     try:
         # Get platform specifications
         specs = PLATFORM_SPECS.get(platform, {}).get(format, {"width": 1080, "height": 1080})
         
-        # Create AI prompt for design generation
-        system_prompt = f"""You are an expert ad designer. Generate a detailed design specification for an advertisement.
-Platform: {platform}
-Format: {format} ({specs['width']}x{specs['height']})
-User Request: {prompt}
-
-Return a JSON structure with:
-- background_color (hex)
-- elements (list of text, shapes, images with positions, sizes, colors, fonts)
-- layout (composition rules)
-
-Make it professional, eye-catching, and platform-compliant."""
-
-        response = openai_client.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": prompt}
-            ],
-            response_format={"type": "json_object"}
+        # Generate design specification using model adapter
+        design_spec = await model_adapter.generate_design_spec(
+            prompt=prompt,
+            platform=platform,
+            format=format,
+            specs=specs,
         )
-        
-        design_spec = json.loads(response.choices[0].message.content)
         
         # Convert to Fabric.js canvas format
         canvas_data = {
