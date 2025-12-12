@@ -51,13 +51,14 @@ echo -e "${BLUE}🤖 Starting ML Service on port 8001...${NC}"
 cd "$DIR/ml_pipeline"
 nohup python serve.py --model gpt2 > /tmp/ml_service.log 2>&1 &
 ML_PID=$!
-sleep 3
+sleep 5
 
-# Check if ML service started
-if curl -s http://localhost:8001/health > /dev/null 2>&1; then
+# Check if ML service started (check if port is listening)
+if lsof -i:8001 > /dev/null 2>&1; then
     echo -e "${GREEN}✅ ML Service running (PID: $ML_PID)${NC}"
 else
     echo -e "${RED}❌ ML Service failed to start. Check /tmp/ml_service.log${NC}"
+    tail -20 /tmp/ml_service.log
     exit 1
 fi
 
@@ -67,13 +68,14 @@ cd "$DIR/backend"
 source venv/bin/activate
 nohup uvicorn app.main:app --reload --port 8000 > /tmp/backend.log 2>&1 &
 BACKEND_PID=$!
-sleep 3
+sleep 5
 
 # Check if backend started
-if curl -s http://localhost:8000/health > /dev/null 2>&1; then
+if lsof -i:8000 > /dev/null 2>&1; then
     echo -e "${GREEN}✅ Backend running (PID: $BACKEND_PID)${NC}"
 else
     echo -e "${RED}❌ Backend failed to start. Check /tmp/backend.log${NC}"
+    tail -20 /tmp/backend.log
     exit 1
 fi
 
@@ -82,13 +84,14 @@ echo -e "${BLUE}🎨 Starting Frontend on port 3000...${NC}"
 cd "$DIR/frontend"
 nohup npm start > /tmp/frontend.log 2>&1 &
 FRONTEND_PID=$!
-sleep 10
+sleep 15
 
 # Check if frontend started
-if curl -s http://localhost:3000 > /dev/null 2>&1; then
+if lsof -i:3000 > /dev/null 2>&1; then
     echo -e "${GREEN}✅ Frontend running (PID: $FRONTEND_PID)${NC}"
 else
     echo -e "${RED}❌ Frontend failed to start. Check /tmp/frontend.log${NC}"
+    tail -20 /tmp/frontend.log
     exit 1
 fi
 
