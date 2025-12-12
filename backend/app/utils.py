@@ -243,20 +243,68 @@ def export_design_file(design, format: str):
     """
     from fastapi.responses import StreamingResponse
     import io
-    
-    # Simplified export - in production, render canvas to image
-    # For hackathon, return placeholder
+    from PIL import Image, ImageDraw, ImageFont
     
     if format in ["png", "jpg"]:
-        # Create blank image with design dimensions
+        # Get canvas data
         canvas_data = design.canvas_data or {}
         width = canvas_data.get("width", 1080)
         height = canvas_data.get("height", 1080)
+        background = canvas_data.get("background", "#ffffff")
         
-        img = Image.new('RGB', (width, height), color='white')
+        # Convert hex color to RGB
+        def hex_to_rgb(hex_color):
+            hex_color = hex_color.lstrip('#')
+            return tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
         
+        # Create image with background color
+        bg_color = hex_to_rgb(background) if background.startswith('#') else (255, 255, 255)
+        img = Image.new('RGB', (width, height), color=bg_color)
+        draw = ImageDraw.Draw(img)
+        
+        # Draw objects
+        objects = canvas_data.get("objects", [])
+        for obj in objects:
+            try:
+                obj_type = obj.get("type", "")
+                
+                if obj_type in ["textbox", "text"]:
+                    # Draw text
+                    text = obj.get("text", "")
+                    x = int(obj.get("left", 0))
+                    y = int(obj.get("top", 0))
+                    font_size = int(obj.get("fontSize", 16))
+                    fill_color = obj.get("fill", "#000000")
+                    fill_rgb = hex_to_rgb(fill_color) if fill_color.startswith('#') else (0, 0, 0)
+                    
+                    # Try to load font, fallback to default
+                    try:
+                        font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", font_size)
+                    except:
+                        try:
+                            font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", font_size)
+                        except:
+                            font = ImageFont.load_default()
+                    
+                    draw.text((x, y), text, fill=fill_rgb, font=font)
+                
+                elif obj_type in ["rect", "rectangle"]:
+                    # Draw rectangle
+                    x = int(obj.get("left", 0))
+                    y = int(obj.get("top", 0))
+                    w = int(obj.get("width", 100))
+                    h = int(obj.get("height", 100))
+                    fill_color = obj.get("fill", "#000000")
+                    fill_rgb = hex_to_rgb(fill_color) if fill_color.startswith('#') else (0, 0, 0)
+                    
+                    draw.rectangle([x, y, x + w, y + h], fill=fill_rgb)
+            except Exception as e:
+                print(f"Error drawing object: {e}")
+                continue
+        
+        # Save to bytes
         img_byte_arr = io.BytesIO()
-        img.save(img_byte_arr, format=format.upper())
+        img.save(img_byte_arr, format='PNG' if format == 'png' else 'JPEG')
         img_byte_arr.seek(0)
         
         return StreamingResponse(
@@ -266,7 +314,38 @@ def export_design_file(design, format: str):
         )
     
     elif format == "svg":
-        svg_content = f'<svg width="{1080}" height="{1080}"><text>Design {design.id}</text></svg>'
+        # Generate SVG from canvas data
+        canvas_data = design.canvas_data or {}
+        width = canvas_data.get("width", 1080)
+        height = canvas_data.get("height", 1080)
+        background = canvas_data.get("background", "#ffffff")
+        
+        svg_parts = [f'<svg width="{width}" height="{height}" xmlns="http://www.w3.org/2000/svg">']
+        svg_parts.append(f'<rect width="{width}" height="{height}" fill="{background}"/>')
+        
+        objects = canvas_data.get("objects", [])
+        for obj in objects:
+            obj_type = obj.get("type", "")
+            
+            if obj_type in ["textbox", "text"]:
+                text = obj.get("text", "")
+                x = obj.get("left", 0)
+                y = obj.get("top", 0)
+                font_size = obj.get("fontSize", 16)
+                fill = obj.get("fill", "#000000")
+                svg_parts.append(f'<text x="{x}" y="{y + font_size}" font-size="{font_size}" fill="{fill}">{text}</text>')
+            
+            elif obj_type in ["rect", "rectangle"]:
+                x = obj.get("left", 0)
+                y = obj.get("top", 0)
+                w = obj.get("width", 100)
+                h = obj.get("height", 100)
+                fill = obj.get("fill", "#000000")
+                svg_parts.append(f'<rect x="{x}" y="{y}" width="{w}" height="{h}" fill="{fill}"/>')
+        
+        svg_parts.append('</svg>')
+        svg_content = ''.join(svg_parts)
+        
         return StreamingResponse(
             io.BytesIO(svg_content.encode()),
             media_type="image/svg+xml",

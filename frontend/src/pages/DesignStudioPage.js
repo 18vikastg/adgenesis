@@ -78,7 +78,14 @@ const DesignStudioPage = () => {
     if (selectedDesign && fabricCanvasRef.current) {
       try {
         fabricCanvasRef.current.clear();
-        if (selectedDesign.canvas_data) {
+        
+        // Set background color first
+        fabricCanvasRef.current.setBackgroundColor(
+          selectedDesign.canvas_data?.background || '#ffffff',
+          fabricCanvasRef.current.renderAll.bind(fabricCanvasRef.current)
+        );
+        
+        if (selectedDesign.canvas_data && selectedDesign.canvas_data.objects) {
           // Set canvas size from design data
           const designWidth = selectedDesign.canvas_data.width || 1080;
           const designHeight = selectedDesign.canvas_data.height || 1080;
@@ -86,22 +93,42 @@ const DesignStudioPage = () => {
           // Scale to fit 800x800 canvas
           const scale = Math.min(800 / designWidth, 800 / designHeight);
           
-          fabricCanvasRef.current.loadFromJSON(selectedDesign.canvas_data, () => {
-            // Scale all objects to fit
-            fabricCanvasRef.current.getObjects().forEach(obj => {
-              obj.scaleX = (obj.scaleX || 1) * scale;
-              obj.scaleY = (obj.scaleY || 1) * scale;
-              obj.left = obj.left * scale;
-              obj.top = obj.top * scale;
-              obj.setCoords();
-            });
+          console.log('Loading design with scale:', scale);
+          console.log('Objects to render:', selectedDesign.canvas_data.objects);
+          
+          // Manually create objects from the data
+          selectedDesign.canvas_data.objects.forEach((objData) => {
+            let fabricObj = null;
             
-            fabricCanvasRef.current.setBackgroundColor(
-              selectedDesign.canvas_data.background || '#ffffff',
-              fabricCanvasRef.current.renderAll.bind(fabricCanvasRef.current)
-            );
-            fabricCanvasRef.current.renderAll();
+            if (objData.type === 'textbox' || objData.type === 'text') {
+              fabricObj = new fabric.Textbox(objData.text || '', {
+                left: (objData.left || 0) * scale,
+                top: (objData.top || 0) * scale,
+                fontSize: (objData.fontSize || 16) * scale,
+                fill: objData.fill || objData.color || '#000000',
+                fontFamily: objData.fontFamily || 'Arial',
+                fontWeight: objData.fontWeight || 'normal',
+                width: objData.width ? objData.width * scale : undefined,
+              });
+            } else if (objData.type === 'rect' || objData.type === 'rectangle') {
+              fabricObj = new fabric.Rect({
+                left: (objData.left || 0) * scale,
+                top: (objData.top || 0) * scale,
+                width: (objData.width || 100) * scale,
+                height: (objData.height || 100) * scale,
+                fill: objData.fill || objData.color || '#000000',
+                rx: objData.rx || objData.borderRadius || 0,
+                ry: objData.ry || objData.borderRadius || 0,
+              });
+            }
+            
+            if (fabricObj) {
+              fabricCanvasRef.current.add(fabricObj);
+            }
           });
+          
+          fabricCanvasRef.current.renderAll();
+          console.log('Canvas rendered with', fabricCanvasRef.current.getObjects().length, 'objects');
         }
       } catch (error) {
         console.error('Error loading canvas data:', error);
