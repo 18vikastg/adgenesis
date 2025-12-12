@@ -1,5 +1,6 @@
 """
-FastAPI server for model inference
+FastAPI server for model inference - AdGenesis Pro
+Professional Canva-like poster generation
 """
 import json
 import torch
@@ -11,9 +12,24 @@ from peft import PeftModel
 import config
 from pathlib import Path
 import argparse
+from typing import Optional, List, Dict, Any
+
+# Import professional templates
+from poster_templates import (
+    generate_professional_design,
+    TEMPLATE_GALLERY,
+    get_template_by_id,
+    generate_from_template,
+    COLOR_PALETTES,
+    FONT_COMBOS
+)
 
 
-app = FastAPI(title="ADGENESIS ML Model Service", version="1.0.0")
+app = FastAPI(
+    title="ADGENESIS Pro ML Service",
+    version="2.0.0",
+    description="Professional poster generation with Canva-like templates"
+)
 
 # CORS middleware
 app.add_middleware(
@@ -35,99 +51,29 @@ class DesignRequest(BaseModel):
     prompt: str
     platform: str
     format: str
+    template_id: Optional[str] = None
+    custom_content: Optional[Dict[str, str]] = None
+
+
+class TemplateRequest(BaseModel):
+    template_id: str
+    platform: str
+    format: str
+    custom_content: Dict[str, str]
 
 
 class DesignResponse(BaseModel):
     background_color: str
+    background_gradient: Optional[str] = None
     elements: list
     layout: dict = {}
+    metadata: Optional[dict] = None
 
 
 def generate_fallback_design(prompt: str, platform: str, format: str, specs: dict) -> dict:
-    """Generate a professional-looking design when ML model fails"""
-    import hashlib
-    import re
-    
-    # Extract keywords from prompt
-    words = re.findall(r'\w+', prompt.lower())
-    keywords = [w for w in words if len(w) > 3][:3]
-    
-    # Color schemes based on keywords
-    color_schemes = {
-        "tech": {"bg": "#1a1a2e", "primary": "#3b82f6", "text": "#ffffff", "accent": "#60a5fa"},
-        "fashion": {"bg": "#ff6b9d", "primary": "#ffe66d", "text": "#ffffff", "accent": "#ff1744"},
-        "sale": {"bg": "#dc2626", "primary": "#fbbf24", "text": "#ffffff", "accent": "#000000"},
-        "food": {"bg": "#fef3c7", "primary": "#ef4444", "text": "#78350f", "accent": "#92400e"},
-        "business": {"bg": "#0a66c2", "primary": "#ffffff", "text": "#ffffff", "accent": "#94a3b8"},
-        "default": {"bg": "#ffffff", "primary": "#3b82f6", "text": "#000000", "accent": "#6b7280"},
-    }
-    
-    # Select color scheme
-    scheme = color_schemes["default"]
-    for keyword in keywords:
-        if keyword in color_schemes:
-            scheme = color_schemes[keyword]
-            break
-    
-    # Create headline (first 40 chars or first sentence)
-    headline = prompt[:40] if len(prompt) <= 40 else prompt.split('.')[0][:40]
-    
-    # Build design elements
-    elements = []
-    width = specs.get("width", 1080)
-    height = specs.get("height", 1080)
-    
-    # Add main headline
-    elements.append({
-        "type": "text",
-        "text": headline.upper() if "sale" in keywords else headline.title(),
-        "x": width * 0.1,
-        "y": height * 0.25,
-        "fontSize": 64 if width > 800 else 48,
-        "color": scheme["text"],
-        "fontFamily": "Arial Black" if "sale" in keywords else "Arial",
-        "fontWeight": "bold"
-    })
-    
-    # Add subtext
-    subtext = f"Powered by AI • {platform.title()}"
-    elements.append({
-        "type": "text",
-        "text": subtext,
-        "x": width * 0.1,
-        "y": height * 0.45,
-        "fontSize": 24,
-        "color": scheme["accent"],
-        "fontFamily": "Arial"
-    })
-    
-    # Add CTA button
-    elements.append({
-        "type": "rectangle",
-        "x": width * 0.1,
-        "y": height * 0.65,
-        "width": 300,
-        "height": 70,
-        "color": scheme["primary"],
-        "borderRadius": 8
-    })
-    
-    elements.append({
-        "type": "text",
-        "text": "Learn More" if "business" in keywords else "Shop Now",
-        "x": width * 0.1 + 80,
-        "y": height * 0.65 + 22,
-        "fontSize": 24,
-        "color": scheme["bg"] if scheme["bg"] != "#ffffff" else "#000000",
-        "fontFamily": "Arial",
-        "fontWeight": "600"
-    })
-    
-    return {
-        "background_color": scheme["bg"],
-        "elements": elements,
-        "layout": {"type": "fallback", "prompt": prompt}
-    }
+    """Generate a professional design using our template system"""
+    # Use the professional template generator
+    return generate_professional_design(prompt, platform, format, specs)
 
 
 def load_model(model_path: str, use_lora: bool = False):
@@ -261,8 +207,19 @@ async def root():
     """Health check"""
     return {
         "status": "healthy",
-        "service": "ADGENESIS ML Model",
+        "service": "ADGENESIS Pro ML Service",
+        "version": "2.0.0",
         "model_loaded": model is not None,
+        "features": ["professional_templates", "smart_generation", "editable_elements"]
+    }
+
+
+@app.get("/health")
+async def health():
+    """Health check endpoint"""
+    return {
+        "status": "healthy",
+        "model_loaded": model is not None
     }
 
 
@@ -272,25 +229,76 @@ async def generate_design(request: DesignRequest):
     Generate ad design specification
     
     Args:
-        request: DesignRequest with prompt, platform, format
+        request: DesignRequest with prompt, platform, format, optional template_id
     
     Returns:
-        DesignResponse with background_color, elements, layout
+        DesignResponse with professional design elements
     """
     try:
-        if model is None:
-            raise HTTPException(status_code=503, detail="Model not loaded")
+        # Get platform specs
+        specs = config.PLATFORM_SPECS.get(request.platform, {}).get(request.format, {"width": 1080, "height": 1080})
         
-        design_spec = generate_design_spec(
-            prompt=request.prompt,
-            platform=request.platform,
-            format=request.format,
-        )
+        # If template_id provided, use template-based generation
+        if request.template_id:
+            custom_content = request.custom_content or {}
+            design_spec = generate_from_template(request.template_id, custom_content, specs)
+        else:
+            # Use AI-powered professional generation
+            design_spec = generate_professional_design(
+                prompt=request.prompt,
+                platform=request.platform,
+                format=request.format,
+                specs=specs
+            )
         
         return DesignResponse(**design_spec)
     
     except Exception as e:
+        print(f"Generation error: {e}")
         raise HTTPException(status_code=500, detail=f"Generation failed: {str(e)}")
+
+
+@app.post("/generate-from-template", response_model=DesignResponse)
+async def generate_from_template_endpoint(request: TemplateRequest):
+    """Generate design from a specific template"""
+    try:
+        specs = config.PLATFORM_SPECS.get(request.platform, {}).get(request.format, {"width": 1080, "height": 1080})
+        design_spec = generate_from_template(request.template_id, request.custom_content, specs)
+        return DesignResponse(**design_spec)
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Generation failed: {str(e)}")
+
+
+@app.get("/templates")
+async def get_templates():
+    """Get all available templates"""
+    return {
+        "templates": TEMPLATE_GALLERY,
+        "categories": list(set(t["category"] for t in TEMPLATE_GALLERY))
+    }
+
+
+@app.get("/templates/{template_id}")
+async def get_template(template_id: str):
+    """Get a specific template"""
+    template = get_template_by_id(template_id)
+    if not template:
+        raise HTTPException(status_code=404, detail="Template not found")
+    return template
+
+
+@app.get("/palettes")
+async def get_palettes():
+    """Get all available color palettes"""
+    return {"palettes": COLOR_PALETTES}
+
+
+@app.get("/fonts")
+async def get_fonts():
+    """Get all available font combinations"""
+    return {"fonts": FONT_COMBOS}
 
 
 @app.get("/models")

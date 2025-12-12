@@ -1,321 +1,368 @@
 [
   {
-    "prompt": "Create a modern tech startup ad for Meta square format with bold typography and gradient background",
+    "prompt": "Create a modern tech startup ad for SaaS product launch",
+    "platform": "meta",
+    "format": "square",
+    "response": {
+      "background_color": "#0f0f1a",
+      "background_gradient": "linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%)",
+      "elements": [
+        {"type": "rect", "x": 600, "y": 0, "width": 480, "height": 1080, "color": "#3b82f6", "opacity": 0.9},
+        {"type": "circle", "x": 700, "y": 200, "width": 280, "height": 280, "color": "#818cf8", "opacity": 0.5},
+        {"type": "circle", "x": 820, "y": 600, "width": 160, "height": 160, "color": "#60a5fa", "opacity": 0.6},
+        {"type": "textbox", "text": "INTRODUCING", "x": 50, "y": 120, "width": 450, "fontSize": 22, "color": "#818cf8", "fontFamily": "DM Sans", "fontWeight": "600", "letterSpacing": 4},
+        {"type": "textbox", "text": "The Future of\nProductivity", "x": 50, "y": 200, "width": 520, "fontSize": 78, "color": "#ffffff", "fontFamily": "Space Grotesk", "fontWeight": "bold", "lineHeight": 1.05},
+        {"type": "textbox", "text": "AI-powered tools that help your team collaborate smarter and ship faster.", "x": 50, "y": 520, "width": 480, "fontSize": 26, "color": "#94a3b8", "fontFamily": "DM Sans", "lineHeight": 1.5},
+        {"type": "rect", "x": 50, "y": 720, "width": 280, "height": 65, "color": "#3b82f6", "borderRadius": 8},
+        {"type": "textbox", "text": "Start Free Trial", "x": 50, "y": 738, "width": 280, "fontSize": 22, "color": "#ffffff", "fontFamily": "DM Sans", "fontWeight": "600", "textAlign": "center"},
+        {"type": "textbox", "text": "ACME", "x": 50, "y": 950, "width": 300, "fontSize": 28, "color": "#94a3b8", "fontFamily": "Space Grotesk", "fontWeight": "bold", "letterSpacing": 3}
+      ],
+      "layout": {"type": "split", "palette": "tech_dark", "fonts": "tech"}
+    }
+  },
+  {
+    "prompt": "Create a fashion sale poster with 50% off discount",
+    "platform": "meta",
+    "format": "square",
+    "response": {
+      "background_color": "#fef7f0",
+      "elements": [
+        {"type": "circle", "x": -100, "y": -100, "width": 600, "height": 600, "color": "#ff6b6b", "opacity": 0.15},
+        {"type": "circle", "x": 700, "y": 600, "width": 500, "height": 500, "color": "#ffd93d", "opacity": 0.2},
+        {"type": "textbox", "text": "FLASH", "x": 80, "y": 180, "width": 400, "fontSize": 120, "color": "#ff6b6b", "fontFamily": "Bebas Neue", "fontWeight": "bold", "letterSpacing": 8},
+        {"type": "textbox", "text": "SALE", "x": 80, "y": 300, "width": 400, "fontSize": 140, "color": "#1a1a1a", "fontFamily": "Bebas Neue", "fontWeight": "bold", "letterSpacing": 12},
+        {"type": "rect", "x": 80, "y": 480, "width": 350, "height": 180, "color": "#1a1a1a", "borderRadius": 0},
+        {"type": "textbox", "text": "50%", "x": 80, "y": 490, "width": 350, "fontSize": 110, "color": "#ffffff", "fontFamily": "Bebas Neue", "fontWeight": "bold", "textAlign": "center"},
+        {"type": "textbox", "text": "OFF", "x": 80, "y": 600, "width": 350, "fontSize": 50, "color": "#ff6b6b", "fontFamily": "Bebas Neue", "textAlign": "center"},
+        {"type": "textbox", "text": "Limited time only • Use code FLASH50", "x": 80, "y": 720, "width": 500, "fontSize": 20, "color": "#666666", "fontFamily": "DM Sans"},
+        {"type": "rect", "x": 80, "y": 820, "width": 280, "height": 60, "color": "#ff6b6b", "borderRadius": 30},
+        {"type": "textbox", "text": "SHOP NOW", "x": 80, "y": 835, "width": 280, "fontSize": 20, "color": "#ffffff", "fontFamily": "DM Sans", "fontWeight": "700", "textAlign": "center", "letterSpacing": 2}
+      ],
+      "layout": {"type": "sale", "palette": "fashion_vibrant", "fonts": "fun"}
+    }
+  },
+  {
+    "prompt": "Create a professional business consulting ad",
+    "platform": "linkedin",
+    "format": "landscape",
+    "response": {
+      "background_color": "#f8fafc",
+      "elements": [
+        {"type": "rect", "x": 0, "y": 0, "width": 500, "height": 627, "color": "#1e3a5f", "opacity": 1},
+        {"type": "rect", "x": 40, "y": 100, "width": 4, "height": 200, "color": "#3b82f6", "opacity": 1},
+        {"type": "textbox", "text": "STRATEGIC\nCONSULTING", "x": 60, "y": 100, "width": 400, "fontSize": 52, "color": "#ffffff", "fontFamily": "Playfair Display", "fontWeight": "bold", "lineHeight": 1.1},
+        {"type": "textbox", "text": "Transform your business with data-driven insights.", "x": 60, "y": 320, "width": 380, "fontSize": 18, "color": "#94a3b8", "fontFamily": "Source Sans Pro", "lineHeight": 1.6},
+        {"type": "textbox", "text": "Schedule Consultation →", "x": 60, "y": 480, "width": 300, "fontSize": 16, "color": "#3b82f6", "fontFamily": "Source Sans Pro", "fontWeight": "600"},
+        {"type": "textbox", "text": "ELEVATE", "x": 580, "y": 280, "width": 500, "fontSize": 80, "color": "#1e3a5f", "fontFamily": "Playfair Display", "fontWeight": "bold"},
+        {"type": "textbox", "text": "PARTNERS", "x": 580, "y": 370, "width": 500, "fontSize": 36, "color": "#64748b", "fontFamily": "Source Sans Pro", "letterSpacing": 8}
+      ],
+      "layout": {"type": "split", "palette": "business_corporate", "fonts": "classic"}
+    }
+  },
+  {
+    "prompt": "Create a food delivery app promotion poster",
+    "platform": "meta",
+    "format": "story",
+    "response": {
+      "background_color": "#ff6b35",
+      "background_gradient": "linear-gradient(180deg, #ff6b35 0%, #f7931e 100%)",
+      "elements": [
+        {"type": "circle", "x": 200, "y": 400, "width": 680, "height": 680, "color": "#ffffff", "opacity": 0.15},
+        {"type": "textbox", "text": "🍔", "x": 400, "y": 350, "width": 280, "fontSize": 180, "textAlign": "center"},
+        {"type": "textbox", "text": "HUNGRY?", "x": 100, "y": 700, "width": 880, "fontSize": 100, "color": "#ffffff", "fontFamily": "Poppins", "fontWeight": "800", "textAlign": "center"},
+        {"type": "textbox", "text": "GET IT\nDELIVERED", "x": 100, "y": 850, "width": 880, "fontSize": 72, "color": "#1a1a1a", "fontFamily": "Poppins", "fontWeight": "800", "textAlign": "center", "lineHeight": 1.1},
+        {"type": "rect", "x": 150, "y": 1150, "width": 780, "height": 120, "color": "#1a1a1a", "borderRadius": 60},
+        {"type": "textbox", "text": "FREE DELIVERY", "x": 150, "y": 1175, "width": 780, "fontSize": 36, "color": "#ffffff", "fontFamily": "Poppins", "fontWeight": "700", "textAlign": "center"},
+        {"type": "textbox", "text": "Use code: YUMMY", "x": 100, "y": 1380, "width": 880, "fontSize": 24, "color": "#ffffff", "fontFamily": "Poppins", "fontWeight": "600", "textAlign": "center", "opacity": 0.9}
+      ],
+      "layout": {"type": "story", "palette": "food_warm", "fonts": "bold"}
+    }
+  },
+  {
+    "prompt": "Create a webinar event announcement poster",
+    "platform": "meta",
+    "format": "square",
+    "response": {
+      "background_color": "#0d1117",
+      "elements": [
+        {"type": "rect", "x": 0, "y": 0, "width": 1080, "height": 200, "color": "#238636", "opacity": 0.2},
+        {"type": "textbox", "text": "FREE WEBINAR", "x": 60, "y": 80, "width": 400, "fontSize": 18, "color": "#238636", "fontFamily": "Inter", "fontWeight": "700", "letterSpacing": 4},
+        {"type": "textbox", "text": "Master the Art of\nDigital Marketing", "x": 60, "y": 180, "width": 700, "fontSize": 64, "color": "#ffffff", "fontFamily": "Inter", "fontWeight": "800", "lineHeight": 1.15},
+        {"type": "textbox", "text": "📅  December 20, 2025", "x": 60, "y": 480, "width": 400, "fontSize": 22, "color": "#8b949e", "fontFamily": "Inter"},
+        {"type": "textbox", "text": "🕐  2:00 PM EST", "x": 60, "y": 530, "width": 400, "fontSize": 22, "color": "#8b949e", "fontFamily": "Inter"},
+        {"type": "textbox", "text": "Learn proven strategies to:\n• Increase conversions\n• Build a loyal audience\n• Scale your campaigns", "x": 60, "y": 680, "width": 600, "fontSize": 20, "color": "#c9d1d9", "fontFamily": "Inter", "lineHeight": 1.8},
+        {"type": "rect", "x": 60, "y": 920, "width": 320, "height": 65, "color": "#238636", "borderRadius": 8},
+        {"type": "textbox", "text": "Register Free →", "x": 60, "y": 940, "width": 320, "fontSize": 20, "color": "#ffffff", "fontFamily": "Inter", "fontWeight": "600", "textAlign": "center"}
+      ],
+      "layout": {"type": "event", "palette": "education_bright", "fonts": "modern"}
+    }
+  },
+  {
+    "prompt": "Create a minimal elegant product showcase",
+    "platform": "meta",
+    "format": "square",
+    "response": {
+      "background_color": "#fafafa",
+      "elements": [
+        {"type": "rect", "x": 440, "y": 200, "width": 200, "height": 680, "color": "#e5e5e5", "opacity": 0.5},
+        {"type": "textbox", "text": "NEW", "x": 100, "y": 300, "width": 200, "fontSize": 14, "color": "#999999", "fontFamily": "Helvetica Neue", "letterSpacing": 6},
+        {"type": "textbox", "text": "Minimalist\nCollection", "x": 100, "y": 350, "width": 300, "fontSize": 56, "color": "#1a1a1a", "fontFamily": "Helvetica Neue", "fontWeight": "300", "lineHeight": 1.2},
+        {"type": "textbox", "text": "Less is more. Discover our curated selection of essential pieces.", "x": 100, "y": 550, "width": 280, "fontSize": 16, "color": "#666666", "fontFamily": "Helvetica Neue", "lineHeight": 1.7},
+        {"type": "textbox", "text": "Explore →", "x": 100, "y": 720, "width": 200, "fontSize": 14, "color": "#1a1a1a", "fontFamily": "Helvetica Neue", "fontWeight": "500", "letterSpacing": 2}
+      ],
+      "layout": {"type": "minimal", "palette": "minimalist_clean", "fonts": "minimal"}
+    }
+  },
+  {
+    "prompt": "Create a luxury premium brand advertisement",
+    "platform": "meta",
+    "format": "portrait",
+    "response": {
+      "background_color": "#0a0a0a",
+      "elements": [
+        {"type": "rect", "x": 480, "y": 200, "width": 120, "height": 950, "color": "#d4af37", "opacity": 0.15},
+        {"type": "textbox", "text": "LUXE", "x": 100, "y": 150, "width": 400, "fontSize": 18, "color": "#d4af37", "fontFamily": "Cormorant Garamond", "letterSpacing": 12},
+        {"type": "textbox", "text": "Timeless\nElegance", "x": 100, "y": 400, "width": 500, "fontSize": 72, "color": "#ffffff", "fontFamily": "Cormorant Garamond", "fontWeight": "600", "lineHeight": 1.1},
+        {"type": "rect", "x": 100, "y": 620, "width": 60, "height": 2, "color": "#d4af37"},
+        {"type": "textbox", "text": "Experience the pinnacle of craftsmanship.", "x": 100, "y": 680, "width": 450, "fontSize": 18, "color": "#888888", "fontFamily": "Cormorant Garamond", "lineHeight": 1.8},
+        {"type": "textbox", "text": "DISCOVER THE COLLECTION", "x": 100, "y": 850, "width": 400, "fontSize": 14, "color": "#d4af37", "fontFamily": "Cormorant Garamond", "letterSpacing": 4}
+      ],
+      "layout": {"type": "hero", "palette": "luxury_gold", "fonts": "luxury"}
+    }
+  },
+  {
+    "prompt": "Create a fitness gym membership promotion",
+    "platform": "meta",
+    "format": "square",
+    "response": {
+      "background_color": "#000000",
+      "elements": [
+        {"type": "rect", "x": 0, "y": 700, "width": 1080, "height": 380, "color": "#ef4444", "opacity": 0.95},
+        {"type": "textbox", "text": "TRANSFORM", "x": 60, "y": 150, "width": 960, "fontSize": 110, "color": "#ffffff", "fontFamily": "Oswald", "fontWeight": "700", "textAlign": "center", "letterSpacing": 4},
+        {"type": "textbox", "text": "YOUR BODY", "x": 60, "y": 280, "width": 960, "fontSize": 90, "color": "#ef4444", "fontFamily": "Oswald", "fontWeight": "700", "textAlign": "center", "letterSpacing": 6},
+        {"type": "textbox", "text": "💪", "x": 450, "y": 450, "width": 180, "fontSize": 120, "textAlign": "center"},
+        {"type": "textbox", "text": "JOIN NOW", "x": 60, "y": 750, "width": 960, "fontSize": 64, "color": "#ffffff", "fontFamily": "Oswald", "fontWeight": "700", "textAlign": "center"},
+        {"type": "textbox", "text": "First month FREE", "x": 60, "y": 850, "width": 960, "fontSize": 32, "color": "#ffffff", "fontFamily": "Oswald", "textAlign": "center", "opacity": 0.9}
+      ],
+      "layout": {"type": "hero", "palette": "fitness_energy", "fonts": "bold"}
+    }
+  },
+  {
+    "prompt": "Create an inspirational quote poster",
     "platform": "meta",
     "format": "square",
     "response": {
       "background_color": "#1a1a2e",
+      "background_gradient": "linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)",
       "elements": [
-        {
-          "type": "text",
-          "text": "Launch Your Startup",
-          "x": 100,
-          "y": 200,
-          "fontSize": 64,
-          "color": "#ffffff",
-          "fontFamily": "Montserrat",
-          "fontWeight": "bold"
-        },
-        {
-          "type": "text",
-          "text": "Join thousands of founders",
-          "x": 100,
-          "y": 300,
-          "fontSize": 24,
-          "color": "#94a3b8",
-          "fontFamily": "Inter"
-        },
-        {
-          "type": "rectangle",
-          "x": 100,
-          "y": 400,
-          "width": 300,
-          "height": 60,
-          "color": "#3b82f6",
-          "borderRadius": 8
-        },
-        {
-          "type": "text",
-          "text": "Get Started Free",
-          "x": 150,
-          "y": 415,
-          "fontSize": 20,
-          "color": "#ffffff",
-          "fontFamily": "Inter",
-          "fontWeight": "600"
-        }
+        {"type": "textbox", "text": "\u201C", "x": 50, "y": 150, "width": 300, "fontSize": 320, "color": "#3b82f6", "fontFamily": "Georgia", "opacity": 0.3},
+        {"type": "textbox", "text": "The only way to do\ngreat work is to love\nwhat you do.", "x": 100, "y": 340, "width": 880, "fontSize": 58, "color": "#ffffff", "fontFamily": "Playfair Display", "fontWeight": "500", "textAlign": "center", "lineHeight": 1.4, "fontStyle": "italic"},
+        {"type": "rect", "x": 440, "y": 720, "width": 200, "height": 3, "color": "#3b82f6"},
+        {"type": "textbox", "text": "STEVE JOBS", "x": 100, "y": 780, "width": 880, "fontSize": 20, "color": "#64748b", "fontFamily": "Inter", "textAlign": "center", "letterSpacing": 6}
       ],
-      "layout": {
-        "grid": "3x3",
-        "alignment": "left"
-      }
+      "layout": {"type": "quote", "palette": "minimalist_dark", "fonts": "elegant"}
     }
   },
   {
-    "prompt": "Design a fashion sale ad for Instagram story with vibrant colors and large discount text",
+    "prompt": "Create a mobile app download promotion",
     "platform": "meta",
     "format": "story",
     "response": {
-      "background_color": "#ff6b9d",
+      "background_color": "#6366f1",
+      "background_gradient": "linear-gradient(180deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%)",
       "elements": [
-        {
-          "type": "text",
-          "text": "SUMMER SALE",
-          "x": 100,
-          "y": 400,
-          "fontSize": 80,
-          "color": "#ffffff",
-          "fontFamily": "Bebas Neue",
-          "fontWeight": "bold"
-        },
-        {
-          "type": "text",
-          "text": "50% OFF",
-          "x": 100,
-          "y": 550,
-          "fontSize": 120,
-          "color": "#ffe66d",
-          "fontFamily": "Impact",
-          "fontWeight": "bold"
-        },
-        {
-          "type": "text",
-          "text": "Shop Now",
-          "x": 100,
-          "y": 750,
-          "fontSize": 40,
-          "color": "#ffffff",
-          "fontFamily": "Inter",
-          "fontWeight": "600"
-        },
-        {
-          "type": "circle",
-          "x": 800,
-          "y": 1200,
-          "width": 150,
-          "height": 150,
-          "color": "#ffe66d"
-        }
-      ]
+        {"type": "circle", "x": -150, "y": 100, "width": 400, "height": 400, "color": "#ffffff", "opacity": 0.1},
+        {"type": "textbox", "text": "📱", "x": 380, "y": 250, "width": 320, "fontSize": 200, "textAlign": "center"},
+        {"type": "textbox", "text": "Your Life,\nSimplified", "x": 100, "y": 650, "width": 880, "fontSize": 72, "color": "#ffffff", "fontFamily": "SF Pro Display", "fontWeight": "700", "textAlign": "center", "lineHeight": 1.15},
+        {"type": "textbox", "text": "The all-in-one app to manage your tasks and goals.", "x": 120, "y": 920, "width": 840, "fontSize": 24, "color": "#ffffff", "fontFamily": "SF Pro Display", "textAlign": "center", "opacity": 0.9},
+        {"type": "rect", "x": 280, "y": 1150, "width": 520, "height": 90, "color": "#ffffff", "borderRadius": 45},
+        {"type": "textbox", "text": "Download Free", "x": 280, "y": 1175, "width": 520, "fontSize": 28, "color": "#6366f1", "fontFamily": "SF Pro Display", "fontWeight": "600", "textAlign": "center"}
+      ],
+      "layout": {"type": "story", "palette": "creative_gradient", "fonts": "modern"}
     }
   },
   {
-    "prompt": "Create a professional B2B software ad for LinkedIn landscape with clean design",
-    "platform": "linkedin",
-    "format": "landscape",
+    "prompt": "Create a coffee shop promotion poster",
+    "platform": "meta",
+    "format": "square",
     "response": {
-      "background_color": "#0a66c2",
+      "background_color": "#2c1810",
       "elements": [
-        {
-          "type": "rectangle",
-          "x": 0,
-          "y": 0,
-          "width": 600,
-          "height": 627,
-          "color": "#0a66c2"
-        },
-        {
-          "type": "rectangle",
-          "x": 600,
-          "y": 0,
-          "width": 600,
-          "height": 627,
-          "color": "#ffffff"
-        },
-        {
-          "type": "text",
-          "text": "Enterprise CRM",
-          "x": 50,
-          "y": 200,
-          "fontSize": 56,
-          "color": "#ffffff",
-          "fontFamily": "Arial",
-          "fontWeight": "bold"
-        },
-        {
-          "type": "text",
-          "text": "Trusted by 10,000+ companies",
-          "x": 50,
-          "y": 280,
-          "fontSize": 20,
-          "color": "#94a3b8",
-          "fontFamily": "Arial"
-        },
-        {
-          "type": "text",
-          "text": "Schedule Demo",
-          "x": 650,
-          "y": 280,
-          "fontSize": 32,
-          "color": "#0a66c2",
-          "fontFamily": "Arial",
-          "fontWeight": "600"
-        }
-      ]
+        {"type": "circle", "x": 540, "y": 540, "width": 1200, "height": 1200, "color": "#3d2317", "opacity": 0.5},
+        {"type": "textbox", "text": "☕", "x": 400, "y": 150, "width": 280, "fontSize": 180, "textAlign": "center"},
+        {"type": "textbox", "text": "FRESH\nBREWED", "x": 100, "y": 420, "width": 880, "fontSize": 96, "color": "#f5e6d3", "fontFamily": "Playfair Display", "fontWeight": "700", "textAlign": "center", "lineHeight": 1.05},
+        {"type": "textbox", "text": "DAILY", "x": 100, "y": 650, "width": 880, "fontSize": 48, "color": "#c9a882", "fontFamily": "Playfair Display", "textAlign": "center", "letterSpacing": 16},
+        {"type": "rect", "x": 340, "y": 750, "width": 400, "height": 80, "color": "#c9a882", "borderRadius": 40},
+        {"type": "textbox", "text": "Buy 1 Get 1 Free", "x": 340, "y": 770, "width": 400, "fontSize": 24, "color": "#2c1810", "fontFamily": "Playfair Display", "fontWeight": "600", "textAlign": "center"}
+      ],
+      "layout": {"type": "product", "palette": "coffee_warm", "fonts": "elegant"}
     }
   },
   {
-    "prompt": "Design a food delivery app promo for Google Ads square format with appetizing imagery placeholders",
-    "platform": "google",
+    "prompt": "Create a Black Friday mega sale poster",
+    "platform": "meta",
+    "format": "square",
+    "response": {
+      "background_color": "#000000",
+      "elements": [
+        {"type": "textbox", "text": "BLACK", "x": 60, "y": 180, "width": 960, "fontSize": 140, "color": "#ffffff", "fontFamily": "Bebas Neue", "fontWeight": "bold", "textAlign": "center", "letterSpacing": 12},
+        {"type": "textbox", "text": "FRIDAY", "x": 60, "y": 320, "width": 960, "fontSize": 160, "color": "#ffd700", "fontFamily": "Bebas Neue", "fontWeight": "bold", "textAlign": "center", "letterSpacing": 8},
+        {"type": "rect", "x": 240, "y": 520, "width": 600, "height": 200, "color": "#ffd700", "borderRadius": 0},
+        {"type": "textbox", "text": "UP TO", "x": 240, "y": 530, "width": 600, "fontSize": 28, "color": "#000000", "fontFamily": "Bebas Neue", "textAlign": "center"},
+        {"type": "textbox", "text": "70% OFF", "x": 240, "y": 570, "width": 600, "fontSize": 100, "color": "#000000", "fontFamily": "Bebas Neue", "fontWeight": "bold", "textAlign": "center"},
+        {"type": "rect", "x": 340, "y": 880, "width": 400, "height": 70, "color": "#ffffff", "borderRadius": 35},
+        {"type": "textbox", "text": "SHOP NOW", "x": 340, "y": 900, "width": 400, "fontSize": 28, "color": "#000000", "fontFamily": "Bebas Neue", "fontWeight": "bold", "textAlign": "center", "letterSpacing": 4}
+      ],
+      "layout": {"type": "sale", "palette": "sale_black_friday", "fonts": "bold"}
+    }
+  },
+  {
+    "prompt": "Create an education online course promotion",
+    "platform": "meta",
+    "format": "square",
+    "response": {
+      "background_color": "#f0f9ff",
+      "elements": [
+        {"type": "circle", "x": 800, "y": -100, "width": 500, "height": 500, "color": "#0ea5e9", "opacity": 0.15},
+        {"type": "textbox", "text": "📚", "x": 60, "y": 100, "width": 150, "fontSize": 80},
+        {"type": "textbox", "text": "ONLINE COURSE", "x": 60, "y": 220, "width": 400, "fontSize": 16, "color": "#0ea5e9", "fontFamily": "Inter", "fontWeight": "700", "letterSpacing": 3},
+        {"type": "textbox", "text": "Master Web\nDevelopment\nin 8 Weeks", "x": 60, "y": 280, "width": 600, "fontSize": 56, "color": "#0f172a", "fontFamily": "Inter", "fontWeight": "800", "lineHeight": 1.15},
+        {"type": "textbox", "text": "✓ 50+ Video Lessons\n✓ Real Projects\n✓ Certificate", "x": 60, "y": 580, "width": 500, "fontSize": 20, "color": "#334155", "fontFamily": "Inter", "lineHeight": 2},
+        {"type": "rect", "x": 60, "y": 850, "width": 300, "height": 70, "color": "#0ea5e9", "borderRadius": 12},
+        {"type": "textbox", "text": "Enroll Now - $49", "x": 60, "y": 870, "width": 300, "fontSize": 22, "color": "#ffffff", "fontFamily": "Inter", "fontWeight": "600", "textAlign": "center"}
+      ],
+      "layout": {"type": "event", "palette": "education_bright", "fonts": "modern"}
+    }
+  },
+  {
+    "prompt": "Create a wellness spa relaxation ad",
+    "platform": "meta",
+    "format": "portrait",
+    "response": {
+      "background_color": "#f5f5f0",
+      "elements": [
+        {"type": "textbox", "text": "🧘", "x": 440, "y": 150, "width": 200, "fontSize": 120, "textAlign": "center"},
+        {"type": "textbox", "text": "SERENITY", "x": 100, "y": 420, "width": 880, "fontSize": 72, "color": "#5c6b5e", "fontFamily": "Cormorant Garamond", "fontWeight": "600", "textAlign": "center", "letterSpacing": 12},
+        {"type": "textbox", "text": "SPA & WELLNESS", "x": 100, "y": 520, "width": 880, "fontSize": 20, "color": "#8b9d8b", "fontFamily": "Cormorant Garamond", "textAlign": "center", "letterSpacing": 8},
+        {"type": "textbox", "text": "Escape the everyday.\nRediscover your balance.", "x": 100, "y": 680, "width": 880, "fontSize": 28, "color": "#5c6b5e", "fontFamily": "Cormorant Garamond", "textAlign": "center", "lineHeight": 1.6, "fontStyle": "italic"},
+        {"type": "rect", "x": 340, "y": 1050, "width": 400, "height": 70, "color": "#5c6b5e", "borderRadius": 35},
+        {"type": "textbox", "text": "Book Your Retreat", "x": 340, "y": 1070, "width": 400, "fontSize": 20, "color": "#ffffff", "fontFamily": "Cormorant Garamond", "fontWeight": "600", "textAlign": "center"}
+      ],
+      "layout": {"type": "minimal", "palette": "wellness_calm", "fonts": "elegant"}
+    }
+  },
+  {
+    "prompt": "Create a music concert event poster",
+    "platform": "meta",
+    "format": "story",
+    "response": {
+      "background_color": "#0a0a0a",
+      "background_gradient": "linear-gradient(180deg, #1a0a2e 0%, #0a0a0a 100%)",
+      "elements": [
+        {"type": "circle", "x": 200, "y": 300, "width": 680, "height": 680, "color": "#ec4899", "opacity": 0.2},
+        {"type": "textbox", "text": "🎵", "x": 400, "y": 200, "width": 280, "fontSize": 150, "textAlign": "center"},
+        {"type": "textbox", "text": "LIVE IN\nCONCERT", "x": 100, "y": 550, "width": 880, "fontSize": 80, "color": "#ffffff", "fontFamily": "Bebas Neue", "fontWeight": "bold", "textAlign": "center", "lineHeight": 1.05, "letterSpacing": 4},
+        {"type": "textbox", "text": "THE ELECTRIC SOULS", "x": 100, "y": 800, "width": 880, "fontSize": 42, "color": "#ec4899", "fontFamily": "Bebas Neue", "textAlign": "center", "letterSpacing": 6},
+        {"type": "textbox", "text": "DECEMBER 31, 2025", "x": 100, "y": 1020, "width": 880, "fontSize": 28, "color": "#ffffff", "fontFamily": "Inter", "fontWeight": "700", "textAlign": "center"},
+        {"type": "rect", "x": 280, "y": 1250, "width": 520, "height": 90, "color": "#ec4899", "borderRadius": 45},
+        {"type": "textbox", "text": "GET TICKETS", "x": 280, "y": 1275, "width": 520, "fontSize": 28, "color": "#ffffff", "fontFamily": "Bebas Neue", "fontWeight": "bold", "textAlign": "center", "letterSpacing": 4}
+      ],
+      "layout": {"type": "event", "palette": "creative_gradient", "fonts": "bold"}
+    }
+  },
+  {
+    "prompt": "Create a travel vacation destination ad",
+    "platform": "meta",
+    "format": "square",
+    "response": {
+      "background_color": "#0ea5e9",
+      "background_gradient": "linear-gradient(180deg, #0ea5e9 0%, #0284c7 100%)",
+      "elements": [
+        {"type": "textbox", "text": "✈️", "x": 800, "y": 80, "width": 200, "fontSize": 80},
+        {"type": "textbox", "text": "ESCAPE TO", "x": 80, "y": 200, "width": 400, "fontSize": 24, "color": "#ffffff", "fontFamily": "Inter", "letterSpacing": 6, "opacity": 0.9},
+        {"type": "textbox", "text": "PARADISE", "x": 80, "y": 260, "width": 600, "fontSize": 96, "color": "#ffffff", "fontFamily": "Playfair Display", "fontWeight": "700"},
+        {"type": "textbox", "text": "🏝️", "x": 400, "y": 420, "width": 280, "fontSize": 200, "textAlign": "center"},
+        {"type": "rect", "x": 80, "y": 700, "width": 920, "height": 200, "color": "#ffffff", "borderRadius": 20, "opacity": 0.95},
+        {"type": "textbox", "text": "MALDIVES PACKAGE", "x": 120, "y": 730, "width": 400, "fontSize": 18, "color": "#0284c7", "fontFamily": "Inter", "fontWeight": "700", "letterSpacing": 2},
+        {"type": "textbox", "text": "From $1,299", "x": 120, "y": 780, "width": 400, "fontSize": 48, "color": "#0f172a", "fontFamily": "Inter", "fontWeight": "800"}
+      ],
+      "layout": {"type": "hero", "palette": "travel_ocean", "fonts": "modern"}
+    }
+  },
+  {
+    "prompt": "Create a podcast show promotion poster",
+    "platform": "meta",
+    "format": "square",
+    "response": {
+      "background_color": "#18181b",
+      "elements": [
+        {"type": "circle", "x": 440, "y": 200, "width": 400, "height": 400, "color": "#fbbf24", "opacity": 0.15},
+        {"type": "textbox", "text": "🎙️", "x": 440, "y": 150, "width": 200, "fontSize": 150, "textAlign": "center"},
+        {"type": "textbox", "text": "NEW EPISODE", "x": 100, "y": 420, "width": 880, "fontSize": 18, "color": "#fbbf24", "fontFamily": "Inter", "fontWeight": "700", "textAlign": "center", "letterSpacing": 6},
+        {"type": "textbox", "text": "THE FUTURE\nOF TECH", "x": 100, "y": 480, "width": 880, "fontSize": 72, "color": "#ffffff", "fontFamily": "Inter", "fontWeight": "800", "textAlign": "center", "lineHeight": 1.1},
+        {"type": "textbox", "text": "EP. 47: AI Revolution", "x": 100, "y": 820, "width": 880, "fontSize": 28, "color": "#ffffff", "fontFamily": "Inter", "fontWeight": "600", "textAlign": "center"},
+        {"type": "rect", "x": 340, "y": 950, "width": 400, "height": 65, "color": "#fbbf24", "borderRadius": 8},
+        {"type": "textbox", "text": "Listen Now", "x": 340, "y": 970, "width": 400, "fontSize": 22, "color": "#18181b", "fontFamily": "Inter", "fontWeight": "700", "textAlign": "center"}
+      ],
+      "layout": {"type": "hero", "palette": "podcast_dark", "fonts": "modern"}
+    }
+  },
+  {
+    "prompt": "Create a pet store adoption event poster",
+    "platform": "meta",
     "format": "square",
     "response": {
       "background_color": "#fef3c7",
       "elements": [
-        {
-          "type": "text",
-          "text": "Hungry?",
-          "x": 100,
-          "y": 150,
-          "fontSize": 96,
-          "color": "#78350f",
-          "fontFamily": "Poppins",
-          "fontWeight": "bold"
-        },
-        {
-          "type": "text",
-          "text": "Get food delivered in 30 mins",
-          "x": 100,
-          "y": 280,
-          "fontSize": 28,
-          "color": "#92400e",
-          "fontFamily": "Inter"
-        },
-        {
-          "type": "rectangle",
-          "x": 100,
-          "y": 400,
-          "width": 400,
-          "height": 80,
-          "color": "#ef4444",
-          "borderRadius": 12
-        },
-        {
-          "type": "text",
-          "text": "Order Now - 50% Off",
-          "x": 180,
-          "y": 425,
-          "fontSize": 28,
-          "color": "#ffffff",
-          "fontFamily": "Inter",
-          "fontWeight": "700"
-        }
-      ]
+        {"type": "circle", "x": 700, "y": 100, "width": 500, "height": 500, "color": "#f59e0b", "opacity": 0.2},
+        {"type": "textbox", "text": "🐕", "x": 200, "y": 150, "width": 300, "fontSize": 180},
+        {"type": "textbox", "text": "🐈", "x": 580, "y": 150, "width": 300, "fontSize": 180},
+        {"type": "textbox", "text": "ADOPT", "x": 100, "y": 420, "width": 880, "fontSize": 120, "color": "#92400e", "fontFamily": "Poppins", "fontWeight": "800", "textAlign": "center"},
+        {"type": "textbox", "text": "DON'T SHOP", "x": 100, "y": 550, "width": 880, "fontSize": 48, "color": "#b45309", "fontFamily": "Poppins", "fontWeight": "600", "textAlign": "center"},
+        {"type": "textbox", "text": "Adoption Event This Saturday", "x": 100, "y": 680, "width": 880, "fontSize": 28, "color": "#78350f", "fontFamily": "Poppins", "fontWeight": "500", "textAlign": "center"},
+        {"type": "rect", "x": 340, "y": 850, "width": 400, "height": 70, "color": "#f59e0b", "borderRadius": 35},
+        {"type": "textbox", "text": "Find Your Best Friend", "x": 340, "y": 870, "width": 400, "fontSize": 22, "color": "#ffffff", "fontFamily": "Poppins", "fontWeight": "600", "textAlign": "center"}
+      ],
+      "layout": {"type": "event", "palette": "pet_friendly", "fonts": "fun"}
     }
   },
   {
-    "prompt": "Create a minimalist fitness app ad for Meta portrait with motivational text",
+    "prompt": "Create a cryptocurrency trading platform ad",
     "platform": "meta",
-    "format": "portrait",
+    "format": "square",
     "response": {
-      "background_color": "#000000",
+      "background_color": "#0a0a0f",
+      "background_gradient": "linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 100%)",
       "elements": [
-        {
-          "type": "text",
-          "text": "TRANSFORM",
-          "x": 100,
-          "y": 300,
-          "fontSize": 72,
-          "color": "#ffffff",
-          "fontFamily": "Oswald",
-          "fontWeight": "bold"
-        },
-        {
-          "type": "text",
-          "text": "YOUR BODY",
-          "x": 100,
-          "y": 400,
-          "fontSize": 72,
-          "color": "#10b981",
-          "fontFamily": "Oswald",
-          "fontWeight": "bold"
-        },
-        {
-          "type": "text",
-          "text": "30-day challenge starts today",
-          "x": 100,
-          "y": 520,
-          "fontSize": 24,
-          "color": "#d1d5db",
-          "fontFamily": "Inter"
-        },
-        {
-          "type": "rectangle",
-          "x": 100,
-          "y": 650,
-          "width": 280,
-          "height": 70,
-          "color": "#10b981",
-          "borderRadius": 35
-        },
-        {
-          "type": "text",
-          "text": "Start Free Trial",
-          "x": 150,
-          "y": 670,
-          "fontSize": 24,
-          "color": "#000000",
-          "fontFamily": "Inter",
-          "fontWeight": "600"
-        }
-      ]
+        {"type": "circle", "x": 700, "y": 200, "width": 500, "height": 500, "color": "#22c55e", "opacity": 0.1},
+        {"type": "textbox", "text": "₿", "x": 800, "y": 80, "width": 200, "fontSize": 100, "color": "#f7931a"},
+        {"type": "textbox", "text": "TRADE\nSMARTER", "x": 60, "y": 200, "width": 600, "fontSize": 90, "color": "#ffffff", "fontFamily": "Inter", "fontWeight": "800", "lineHeight": 1.05},
+        {"type": "textbox", "text": "The future of crypto trading is here.", "x": 60, "y": 450, "width": 500, "fontSize": 24, "color": "#64748b", "fontFamily": "Inter"},
+        {"type": "rect", "x": 60, "y": 550, "width": 600, "height": 180, "color": "#1e293b", "borderRadius": 16},
+        {"type": "textbox", "text": "📈  +127.5%", "x": 100, "y": 580, "width": 250, "fontSize": 36, "color": "#22c55e", "fontFamily": "Inter", "fontWeight": "700"},
+        {"type": "textbox", "text": "Bitcoin (BTC)", "x": 100, "y": 640, "width": 250, "fontSize": 16, "color": "#94a3b8", "fontFamily": "Inter"},
+        {"type": "rect", "x": 60, "y": 800, "width": 300, "height": 65, "color": "#22c55e", "borderRadius": 8},
+        {"type": "textbox", "text": "Start Trading", "x": 60, "y": 820, "width": 300, "fontSize": 22, "color": "#0a0a0f", "fontFamily": "Inter", "fontWeight": "700", "textAlign": "center"}
+      ],
+      "layout": {"type": "hero", "palette": "crypto_dark", "fonts": "tech"}
     }
   },
   {
-    "prompt": "Design an e-commerce holiday sale ad for Google landscape with festive colors",
-    "platform": "google",
+    "prompt": "Create a real estate property listing ad",
+    "platform": "meta",
     "format": "landscape",
     "response": {
-      "background_color": "#dc2626",
+      "background_color": "#1e293b",
       "elements": [
-        {
-          "type": "text",
-          "text": "BLACK FRIDAY",
-          "x": 100,
-          "y": 150,
-          "fontSize": 64,
-          "color": "#ffffff",
-          "fontFamily": "Impact",
-          "fontWeight": "bold"
-        },
-        {
-          "type": "text",
-          "text": "UP TO 70% OFF",
-          "x": 100,
-          "y": 240,
-          "fontSize": 48,
-          "color": "#fbbf24",
-          "fontFamily": "Arial Black",
-          "fontWeight": "bold"
-        },
-        {
-          "type": "text",
-          "text": "Limited Time Only",
-          "x": 100,
-          "y": 320,
-          "fontSize": 24,
-          "color": "#ffffff",
-          "fontFamily": "Arial"
-        },
-        {
-          "type": "rectangle",
-          "x": 100,
-          "y": 400,
-          "width": 250,
-          "height": 60,
-          "color": "#000000",
-          "borderRadius": 8
-        },
-        {
-          "type": "text",
-          "text": "Shop Deals",
-          "x": 140,
-          "y": 418,
-          "fontSize": 26,
-          "color": "#ffffff",
-          "fontFamily": "Arial",
-          "fontWeight": "bold"
-        }
-      ]
+        {"type": "rect", "x": 0, "y": 0, "width": 600, "height": 628, "color": "#0f172a", "opacity": 1},
+        {"type": "textbox", "text": "FOR SALE", "x": 50, "y": 60, "width": 200, "fontSize": 14, "color": "#22c55e", "fontFamily": "Inter", "fontWeight": "700", "letterSpacing": 3},
+        {"type": "textbox", "text": "Luxury\nWaterfront\nVilla", "x": 50, "y": 120, "width": 500, "fontSize": 52, "color": "#ffffff", "fontFamily": "Playfair Display", "fontWeight": "600", "lineHeight": 1.15},
+        {"type": "textbox", "text": "$2,450,000", "x": 50, "y": 380, "width": 400, "fontSize": 42, "color": "#22c55e", "fontFamily": "Inter", "fontWeight": "700"},
+        {"type": "textbox", "text": "🛏 5 Beds  •  🛁 4 Baths  •  📐 4,200 sqft", "x": 50, "y": 460, "width": 500, "fontSize": 16, "color": "#94a3b8", "fontFamily": "Inter"},
+        {"type": "textbox", "text": "Schedule Viewing →", "x": 50, "y": 540, "width": 250, "fontSize": 16, "color": "#3b82f6", "fontFamily": "Inter", "fontWeight": "600"},
+        {"type": "textbox", "text": "🏠", "x": 800, "y": 250, "width": 200, "fontSize": 120, "textAlign": "center"}
+      ],
+      "layout": {"type": "split", "palette": "real_estate", "fonts": "modern"}
     }
   }
 ]
