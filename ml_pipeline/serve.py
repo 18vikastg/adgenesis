@@ -301,6 +301,87 @@ async def get_fonts():
     return {"fonts": FONT_COMBOS}
 
 
+# ============ REAL IMAGE GENERATION ENDPOINTS ============
+
+# Import image generator
+try:
+    from image_generator import image_generator, AVAILABLE_MODELS, STYLE_PRESETS
+    IMAGE_GEN_AVAILABLE = True
+except ImportError:
+    IMAGE_GEN_AVAILABLE = False
+    print("⚠️ Image generator not available")
+
+
+class ImageGenRequest(BaseModel):
+    prompt: str
+    platform: str = "instagram"
+    format: str = "post"
+    style: str = "modern"
+    model: str = "sdxl-turbo"
+    width: Optional[int] = None
+    height: Optional[int] = None
+
+
+class ImageGenResponse(BaseModel):
+    success: bool
+    image_data: Optional[str] = None
+    image_url: Optional[str] = None
+    width: Optional[int] = None
+    height: Optional[int] = None
+    error: Optional[str] = None
+    metadata: Optional[dict] = None
+
+
+@app.post("/generate-image", response_model=ImageGenResponse)
+async def generate_image(request: ImageGenRequest):
+    """
+    Generate a real AI image using Stable Diffusion or similar models.
+    
+    Requires HUGGINGFACE_API_KEY or STABILITY_API_KEY environment variable.
+    """
+    if not IMAGE_GEN_AVAILABLE:
+        raise HTTPException(
+            status_code=503, 
+            detail="Image generation not available. Check image_generator.py"
+        )
+    
+    try:
+        result = await image_generator.generate_ad_image(
+            prompt=request.prompt,
+            platform=request.platform,
+            format=request.format,
+            style=request.style,
+            model=request.model,
+            width=request.width,
+            height=request.height
+        )
+        return ImageGenResponse(**result)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/image-models")
+async def get_image_models():
+    """Get available image generation models"""
+    if not IMAGE_GEN_AVAILABLE:
+        return {"models": [], "available": False}
+    return {
+        "models": [{"id": k, **v} for k, v in AVAILABLE_MODELS.items()],
+        "available": True
+    }
+
+
+@app.get("/image-styles")
+async def get_image_styles():
+    """Get available style presets for image generation"""
+    if not IMAGE_GEN_AVAILABLE:
+        return {"styles": {}, "available": False}
+    return {
+        "styles": STYLE_PRESETS,
+        "available": True
+    }
+
+
 @app.get("/models")
 async def list_models():
     """List available models"""

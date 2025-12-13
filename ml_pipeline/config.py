@@ -101,8 +101,9 @@ INFERENCE_CONFIG = {
     "do_sample": True,
 }
 
-# Platform specifications (from main app)
+# Platform specifications (from main app) - includes frontend platform names
 PLATFORM_SPECS = {
+    # Backend enum values
     "meta": {
         "square": {"width": 1080, "height": 1080, "min_text_ratio": 0.2},
         "landscape": {"width": 1200, "height": 628, "min_text_ratio": 0.2},
@@ -116,6 +117,35 @@ PLATFORM_SPECS = {
     "linkedin": {
         "square": {"width": 1200, "height": 1200},
         "landscape": {"width": 1200, "height": 627},
+        "post": {"width": 1200, "height": 627},
+        "cover": {"width": 1584, "height": 396},
+    },
+    # Frontend platform names (for ML service)
+    "instagram": {
+        "post": {"width": 1080, "height": 1080},
+        "story": {"width": 1080, "height": 1920},
+        "reel": {"width": 1080, "height": 1920},
+        "landscape": {"width": 1080, "height": 566},
+        "square": {"width": 1080, "height": 1080},
+    },
+    "facebook": {
+        "post": {"width": 1200, "height": 630},
+        "cover": {"width": 820, "height": 312},
+        "story": {"width": 1080, "height": 1920},
+        "square": {"width": 1200, "height": 1200},
+    },
+    "twitter": {
+        "post": {"width": 1600, "height": 900},
+        "header": {"width": 1500, "height": 500},
+        "square": {"width": 1200, "height": 1200},
+    },
+    "youtube": {
+        "thumbnail": {"width": 1280, "height": 720},
+        "banner": {"width": 2560, "height": 1440},
+    },
+    "tiktok": {
+        "video": {"width": 1080, "height": 1920},
+        "story": {"width": 1080, "height": 1920},
     },
 }
 

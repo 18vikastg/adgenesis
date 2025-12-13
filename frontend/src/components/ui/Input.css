@@ -1,0 +1,365 @@
+/**
+ * AdGenesis - Premium Input Styles
+ */
+
+/* Input Wrapper */
+.input-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.input-full {
+  width: 100%;
+}
+
+/* Label */
+.input-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #334155;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.input-required {
+  color: #ef4444;
+}
+
+/* Input Container */
+.input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+  overflow: hidden;
+}
+
+.input-container:hover:not(.input-disabled) {
+  border-color: #cbd5e1;
+}
+
+.input-focused {
+  border-color: #8b5cf6 !important;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+}
+
+.input-error {
+  border-color: #ef4444 !important;
+}
+
+.input-error.input-focused {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.input-disabled {
+  background: #f8fafc;
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Input Sizes */
+.input-sm {
+  height: 34px;
+}
+
+.input-md {
+  height: 42px;
+}
+
+.input-lg {
+  height: 50px;
+}
+
+/* Input Field */
+.input-field {
+  flex: 1;
+  height: 100%;
+  padding: 0 14px;
+  font-size: 14px;
+  font-family: inherit;
+  color: #1e293b;
+  background: transparent;
+  border: none;
+  outline: none;
+}
+
+.input-field::placeholder {
+  color: #94a3b8;
+}
+
+.input-field:disabled {
+  cursor: not-allowed;
+}
+
+/* Input Icons */
+.input-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+  flex-shrink: 0;
+}
+
+.input-icon-left {
+  padding-left: 12px;
+}
+
+.input-icon-right {
+  padding-right: 12px;
+}
+
+/* Input Suffix */
+.input-suffix {
+  padding-right: 12px;
+  font-size: 13px;
+  color: #64748b;
+  white-space: nowrap;
+}
+
+/* Message */
+.input-message {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.input-message-error {
+  color: #ef4444;
+}
+
+/* ==================== */
+/* Textarea             */
+/* ==================== */
+
+.textarea-container {
+  background: #ffffff;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+  overflow: hidden;
+}
+
+.textarea-container:hover:not(.input-disabled) {
+  border-color: #cbd5e1;
+}
+
+.textarea-field {
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 14px;
+  font-family: inherit;
+  color: #1e293b;
+  background: transparent;
+  border: none;
+  outline: none;
+  min-height: 100px;
+}
+
+.textarea-field::placeholder {
+  color: #94a3b8;
+}
+
+/* ==================== */
+/* Select               */
+/* ==================== */
+
+.select-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.select-container:hover:not(.input-disabled) {
+  border-color: #cbd5e1;
+}
+
+.select-field {
+  flex: 1;
+  height: 100%;
+  padding: 0 36px 0 14px;
+  font-size: 14px;
+  font-family: inherit;
+  color: #1e293b;
+  background: transparent;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.select-arrow {
+  position: absolute;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  pointer-events: none;
+  transition: transform 0.2s ease;
+}
+
+.select-container:focus-within .select-arrow {
+  transform: rotate(180deg);
+}
+
+/* ==================== */
+/* Search Input         */
+/* ==================== */
+
+.search-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 42px;
+  background: #f8fafc;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+}
+
+.search-container:hover {
+  background: #f1f5f9;
+}
+
+.search-container:focus-within {
+  background: #ffffff;
+  border-color: #8b5cf6;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+}
+
+.search-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: 14px;
+  color: #94a3b8;
+}
+
+.search-field {
+  flex: 1;
+  height: 100%;
+  padding: 0 14px;
+  font-size: 14px;
+  font-family: inherit;
+  color: #1e293b;
+  background: transparent;
+  border: none;
+  outline: none;
+}
+
+.search-field::placeholder {
+  color: #94a3b8;
+}
+
+.search-clear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  margin-right: 8px;
+  color: #94a3b8;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.search-clear:hover {
+  background: #e2e8f0;
+  color: #64748b;
+}
+
+/* ==================== */
+/* Number Input         */
+/* ==================== */
+
+.number-input-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.number-input-container {
+  display: flex;
+  align-items: center;
+  height: 38px;
+  background: #ffffff;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.number-field {
+  flex: 1;
+  width: 60px;
+  height: 100%;
+  padding: 0 8px;
+  font-size: 14px;
+  font-family: inherit;
+  font-weight: 500;
+  color: #1e293b;
+  text-align: center;
+  background: transparent;
+  border: none;
+  outline: none;
+  -moz-appearance: textfield;
+}
+
+.number-field::-webkit-outer-spin-button,
+.number-field::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.number-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 100%;
+  color: #64748b;
+  background: #f8fafc;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.number-btn:hover {
+  background: #e2e8f0;
+  color: #334155;
+}
+
+.number-btn:active {
+  background: #cbd5e1;
+}
+
+/* Dark Variant */
+.input-dark .input-container,
+.input-dark .textarea-container,
+.input-dark .select-container {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+.input-dark .input-field,
+.input-dark .textarea-field,
+.input-dark .select-field {
+  color: #f1f5f9;
+}
+
+.input-dark .input-field::placeholder,
+.input-dark .textarea-field::placeholder {
+  color: #64748b;
+}

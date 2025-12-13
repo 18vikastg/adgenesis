@@ -1,0 +1,297 @@
+/**
+ * AdGenesis - Tabs Styles
+ * Premium tabs with smooth animations
+ */
+
+/* Tabs Container */
+.tabs {
+  display: flex;
+  flex-direction: column;
+}
+
+.tabs-horizontal {
+  flex-direction: column;
+}
+
+.tabs-vertical {
+  flex-direction: row;
+}
+
+/* Tab List */
+.tab-list {
+  position: relative;
+  display: flex;
+  gap: 4px;
+}
+
+.tabs-horizontal .tab-list {
+  flex-direction: row;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding-bottom: 1px;
+}
+
+.tabs-vertical .tab-list {
+  flex-direction: column;
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  padding-right: 1px;
+}
+
+/* Tab Indicator (Animated Underline) */
+.tab-indicator {
+  position: absolute;
+  height: 2px;
+  background: linear-gradient(90deg, #8b5cf6 0%, #06b6d4 100%);
+  border-radius: 2px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tabs-horizontal .tab-indicator {
+  bottom: 0;
+  left: 0;
+}
+
+.tabs-vertical .tab-indicator {
+  right: 0;
+  top: 0;
+  width: 2px;
+  height: auto;
+}
+
+/* Tab Button */
+.tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #64748b;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.tab:hover {
+  color: #e2e8f0;
+}
+
+.tab-selected {
+  color: #f1f5f9;
+}
+
+.tab-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Tab Sizes */
+.tabs-sm .tab {
+  padding: 8px 12px;
+  font-size: 13px;
+}
+
+.tabs-lg .tab {
+  padding: 14px 20px;
+  font-size: 15px;
+}
+
+/* Tab Icon */
+.tab-icon {
+  display: flex;
+  color: inherit;
+}
+
+/* Tab Badge */
+.tab-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: white;
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+  border-radius: 10px;
+}
+
+/* Tab Variants */
+
+/* Pills Variant */
+.tabs-pills .tab-list {
+  gap: 8px;
+  border: none;
+  padding: 0;
+}
+
+.tabs-pills .tab {
+  border-radius: 10px;
+}
+
+.tabs-pills .tab-pills-selected {
+  color: white;
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+}
+
+/* Bordered Variant */
+.tabs-bordered .tab-list {
+  gap: 0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 4px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.tabs-bordered .tab {
+  flex: 1;
+  justify-content: center;
+  border-radius: 8px;
+}
+
+.tabs-bordered .tab-bordered-selected {
+  color: white;
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
+/* Tab Panel */
+.tab-panel {
+  padding: 24px 0;
+  animation: tabPanelFadeIn 0.3s ease;
+}
+
+.tab-panel-hidden {
+  display: none;
+}
+
+@keyframes tabPanelFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Vertical Tabs */
+.tabs-vertical .tab-panel {
+  padding: 0 24px;
+}
+
+.vertical-tabs {
+  gap: 24px;
+}
+
+/* ==================== */
+/* Segmented Control    */
+/* ==================== */
+
+.segmented-control {
+  position: relative;
+  display: inline-flex;
+  padding: 4px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+}
+
+.segmented-full {
+  display: flex;
+  width: 100%;
+}
+
+.segmented-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Segmented Indicator */
+.segmented-indicator {
+  position: absolute;
+  top: 4px;
+  left: 0;
+  height: calc(100% - 8px);
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 0;
+}
+
+/* Segment Button */
+.segment {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #94a3b8;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  z-index: 1;
+}
+
+.segmented-full .segment {
+  flex: 1;
+}
+
+.segment:hover {
+  color: #e2e8f0;
+}
+
+.segment-selected {
+  color: white;
+}
+
+.segment-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Segment Sizes */
+.segmented-sm .segment {
+  padding: 6px 12px;
+  font-size: 13px;
+}
+
+.segmented-lg .segment {
+  padding: 12px 20px;
+  font-size: 15px;
+}
+
+/* Segment Icon */
+.segment-icon {
+  display: flex;
+}
+
+/* ==================== */
+/* Vertical Tabs Styles */
+/* ==================== */
+
+.tabs-vertical .tab-list {
+  min-width: 200px;
+}
+
+.tabs-vertical .tab {
+  justify-content: flex-start;
+  text-align: left;
+}
+
+.tabs-vertical .tab-selected {
+  background: rgba(139, 92, 246, 0.1);
+  border-radius: 8px;
+}
+
+.tabs-vertical .tab-indicator {
+  display: none;
+}

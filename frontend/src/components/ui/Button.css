@@ -1,0 +1,359 @@
+/**
+ * AdGenesis - Premium Button Styles
+ * Micro-interactions, hover effects, and premium feel
+ */
+
+/* Base Button */
+.btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn:focus {
+  outline: none;
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--primary-500, #8b5cf6);
+  outline-offset: 2px;
+}
+
+/* Button Sizes */
+.btn-xs {
+  height: 28px;
+  padding: 0 10px;
+  font-size: 12px;
+  border-radius: 6px;
+}
+
+.btn-sm {
+  height: 34px;
+  padding: 0 14px;
+  font-size: 13px;
+  border-radius: 8px;
+}
+
+.btn-md {
+  height: 42px;
+  padding: 0 20px;
+  font-size: 14px;
+  border-radius: 10px;
+}
+
+.btn-lg {
+  height: 50px;
+  padding: 0 28px;
+  font-size: 15px;
+  border-radius: 12px;
+}
+
+.btn-xl {
+  height: 58px;
+  padding: 0 36px;
+  font-size: 16px;
+  border-radius: 14px;
+}
+
+/* Primary Variant */
+.btn-primary {
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+  color: white;
+  box-shadow: 0 4px 14px -3px rgba(139, 92, 246, 0.5);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #9f75fa 0%, #8b5cf6 100%);
+  box-shadow: 0 6px 20px -3px rgba(139, 92, 246, 0.6);
+  transform: translateY(-1px);
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 2px 10px -3px rgba(139, 92, 246, 0.5);
+}
+
+/* Secondary Variant */
+.btn-secondary {
+  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+  color: white;
+  box-shadow: 0 4px 14px -3px rgba(6, 182, 212, 0.5);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #22d3ee 0%, #06b6d4 100%);
+  box-shadow: 0 6px 20px -3px rgba(6, 182, 212, 0.6);
+  transform: translateY(-1px);
+}
+
+/* Gradient Variant */
+.btn-gradient {
+  background: linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%);
+  color: white;
+  box-shadow: 0 4px 14px -3px rgba(139, 92, 246, 0.4);
+}
+
+.btn-gradient:hover:not(:disabled) {
+  box-shadow: 0 8px 25px -5px rgba(139, 92, 246, 0.5);
+  transform: translateY(-2px);
+}
+
+/* Outline Variant */
+.btn-outline {
+  background: transparent;
+  color: #8b5cf6;
+  border: 2px solid #8b5cf6;
+}
+
+.btn-outline:hover:not(:disabled) {
+  background: rgba(139, 92, 246, 0.1);
+  border-color: #7c3aed;
+  color: #7c3aed;
+}
+
+/* Ghost Variant */
+.btn-ghost {
+  background: transparent;
+  color: #64748b;
+}
+
+.btn-ghost:hover:not(:disabled) {
+  background: rgba(100, 116, 139, 0.1);
+  color: #475569;
+}
+
+/* Glass Variant */
+.btn-glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.btn-glass:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Dark Variant */
+.btn-dark {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  color: white;
+  box-shadow: 0 4px 14px -3px rgba(15, 23, 42, 0.5);
+}
+
+.btn-dark:hover:not(:disabled) {
+  background: linear-gradient(135deg, #334155 0%, #1e293b 100%);
+  box-shadow: 0 6px 20px -3px rgba(15, 23, 42, 0.6);
+  transform: translateY(-1px);
+}
+
+/* Success Variant */
+.btn-success {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  box-shadow: 0 4px 14px -3px rgba(16, 185, 129, 0.5);
+}
+
+.btn-success:hover:not(:disabled) {
+  background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+  box-shadow: 0 6px 20px -3px rgba(16, 185, 129, 0.6);
+  transform: translateY(-1px);
+}
+
+/* Danger Variant */
+.btn-danger {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+  box-shadow: 0 4px 14px -3px rgba(239, 68, 68, 0.5);
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
+  box-shadow: 0 6px 20px -3px rgba(239, 68, 68, 0.6);
+  transform: translateY(-1px);
+}
+
+/* White Variant */
+.btn-white {
+  background: white;
+  color: #1e293b;
+  box-shadow: 0 4px 14px -3px rgba(0, 0, 0, 0.1);
+}
+
+.btn-white:hover:not(:disabled) {
+  background: #f8fafc;
+  box-shadow: 0 6px 20px -3px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+}
+
+/* States */
+.btn-disabled,
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.btn-loading {
+  pointer-events: none;
+}
+
+.btn-full {
+  width: 100%;
+}
+
+/* Loading Spinner */
+.btn-spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-spinner svg {
+  width: 18px;
+  height: 18px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Button Icon */
+.btn-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-icon-left {
+  margin-right: 2px;
+}
+
+.btn-icon-right {
+  margin-left: 2px;
+}
+
+/* Button Content */
+.btn-content {
+  position: relative;
+  z-index: 1;
+}
+
+/* Shine Effect */
+.btn-shine {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: left 0.5s ease;
+}
+
+.btn:hover:not(:disabled) .btn-shine {
+  left: 100%;
+}
+
+/* ==================== */
+/* Icon Button          */
+/* ==================== */
+
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+  color: #64748b;
+}
+
+.icon-btn:focus {
+  outline: none;
+}
+
+.icon-btn:focus-visible {
+  outline: 2px solid #8b5cf6;
+  outline-offset: 2px;
+}
+
+/* Icon Button Sizes */
+.icon-btn-xs { width: 28px; height: 28px; }
+.icon-btn-sm { width: 34px; height: 34px; }
+.icon-btn-md { width: 40px; height: 40px; }
+.icon-btn-lg { width: 48px; height: 48px; }
+
+/* Icon Button Variants */
+.icon-btn-ghost {
+  background: transparent;
+}
+
+.icon-btn-ghost:hover {
+  background: rgba(100, 116, 139, 0.1);
+  color: #475569;
+}
+
+.icon-btn-filled {
+  background: #f1f5f9;
+}
+
+.icon-btn-filled:hover {
+  background: #e2e8f0;
+  color: #334155;
+}
+
+.icon-btn-primary {
+  background: rgba(139, 92, 246, 0.1);
+  color: #8b5cf6;
+}
+
+.icon-btn-primary:hover {
+  background: rgba(139, 92, 246, 0.2);
+  color: #7c3aed;
+}
+
+/* ==================== */
+/* Button Group         */
+/* ==================== */
+
+.btn-group {
+  display: inline-flex;
+}
+
+.btn-group .btn {
+  border-radius: 0;
+}
+
+.btn-group .btn:first-child {
+  border-radius: 10px 0 0 10px;
+}
+
+.btn-group .btn:last-child {
+  border-radius: 0 10px 10px 0;
+}
+
+.btn-group .btn:not(:last-child) {
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+}
