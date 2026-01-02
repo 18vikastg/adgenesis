@@ -1,0 +1,10 @@
+{
+  "model_name": "gpt2-medium",
+  "num_epochs": 3,
+  "batch_size": 4,
+  "learning_rate": 0.0002,
+  "max_length": 1024,
+  "use_lora": true,
+  "lora_r": 16,
+  "lora_alpha": 32
+}
