@@ -47,6 +47,23 @@ from retail_design_system import (
     create_protein_bar_creative
 )
 
+# Import professional design generator (HIGH QUALITY)
+from professional_design_generator import (
+    generate_professional_design,
+    professional_blueprint_to_fabric,
+    PROFESSIONAL_PALETTES,
+    PROFESSIONAL_LAYOUTS,
+    INDUSTRY_CONTENT,
+    detect_industry,
+)
+
+# Import PREMIUM graphic design generator (AGENCY QUALITY)
+from premium_design_generator import (
+    generate_premium_design,
+    premium_blueprint_to_fabric,
+    PREMIUM_PALETTES,
+)
+
 # =============================================================================
 # APP SETUP
 # =============================================================================
@@ -671,38 +688,44 @@ async def generate_design(request: DesignRequest):
     """
     Generate a design blueprint from a prompt.
     Returns both the blueprint and Fabric.js-ready JSON.
+    Uses PREMIUM design generator for agency-quality output.
     """
     try:
         # Try model first if available
         blueprint = None
-        generation_method = "rule_based"
+        generation_method = "premium"
         
         if model_loaded:
             blueprint = generate_with_model(request)
             if blueprint is not None:
                 generation_method = "trained_model"
         
-        # Fallback to rule-based generation
+        # Use PREMIUM design generator (AGENCY QUALITY - Rich Graphics)
         if blueprint is None:
-            print(f"\n🎨 Generating MODERN design for: {request.prompt}")
-            blueprint = generate_design_blueprint(request)
-            generation_method = "rule_based"
+            print(f"\n🎨 Generating PREMIUM graphic design for: {request.prompt}")
+            blueprint = generate_premium_design(
+                prompt=request.prompt,
+                platform=request.platform,
+                format=request.format
+            )
+            generation_method = "premium"
         
-        # Convert to Fabric.js format
-        fabric_json = blueprint_to_fabric(blueprint)
+        # Convert to Fabric.js format using premium converter
+        fabric_json = premium_blueprint_to_fabric(blueprint)
         
         # Add generation metadata
         blueprint["_generation_info"] = {
             "method": generation_method,
             "model_loaded": model_loaded,
-            "timestamp": str(Path(".")),  # Will be replaced with actual timestamp
+            "timestamp": str(Path(".")),
+            "quality": "premium_graphic"
         }
         
         # Log which method was used
         if generation_method == "trained_model":
             print(f"✅ Design generated using TRAINED MODEL")
         else:
-            print(f"📋 Design generated using RULE-BASED SYSTEM (fallback)")
+            print(f"🎨 Design generated using PREMIUM GRAPHIC SYSTEM (agency-quality)")
         
         return DesignResponse(
             success=True,
@@ -712,6 +735,8 @@ async def generate_design(request: DesignRequest):
         )
     
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/templates", response_model=TemplateListResponse)
