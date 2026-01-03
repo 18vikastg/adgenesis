@@ -271,23 +271,59 @@ const DesignStudioPage = () => {
     const backendFormat = mapFormatToBackend(format, platform);
     
     try {
-      // Call ML service
-      const response = await fetch(`${ML_SERVICE_URL}/generate`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          prompt,
-          platform,
-          format,
-          industry,
-        }),
-      });
+      // First check if ML service is available
+      let mlServiceAvailable = false;
+      try {
+        const healthResponse = await fetch(`${ML_SERVICE_URL}/health`);
+        if (healthResponse.ok) {
+          const healthData = await healthResponse.json();
+          mlServiceAvailable = true;
+          console.log('🧠 ML Service Status:', healthData);
+        }
+      } catch (e) {
+        console.warn('⚠️ ML Service not available, will use backend fallback');
+      }
 
-      if (!response.ok) throw new Error('Generation failed');
+      let designSpec;
+      let generationMethod = 'fallback';
 
-      const designSpec = await response.json();
+      if (mlServiceAvailable) {
+        // Call ML service directly
+        const response = await fetch(`${ML_SERVICE_URL}/generate`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            prompt,
+            platform,
+            format,
+            industry,
+          }),
+        });
 
-      // Save to backend with mapped values
+        if (response.ok) {
+          designSpec = await response.json();
+          generationMethod = designSpec?.blueprint?._generation_info?.method || 'ml_service';
+          console.log(`✅ Design generated via ML Service (method: ${generationMethod})`);
+        }
+      }
+
+      // Fallback to backend if ML service failed
+      if (!designSpec) {
+        console.log('📋 Using backend fallback for generation');
+        const savedDesign = await generateDesign({ 
+          prompt, 
+          platform: backendPlatform, 
+          format: backendFormat 
+        });
+        designSpec = { 
+          blueprint: savedDesign.canvas_data,
+          fabric_json: savedDesign.canvas_data,
+          success: true
+        };
+        generationMethod = 'backend_fallback';
+      }
+
+      // Save to backend for persistence
       const savedDesign = await generateDesign({ 
         prompt, 
         platform: backendPlatform, 
@@ -301,10 +337,11 @@ const DesignStudioPage = () => {
         platform,
         format,
         canvas_data: {
-          ...designSpec,
+          ...designSpec.fabric_json || designSpec.blueprint,
           width: canvasSize.width,
           height: canvasSize.height,
         },
+        generation_method: generationMethod,
         created_at: new Date().toISOString(),
       };
 
@@ -312,6 +349,9 @@ const DesignStudioPage = () => {
       addToHistory(fullDesign);
       renderDesignToCanvas(fullDesign.canvas_data);
       queryClient.invalidateQueries('designs');
+      
+      // Log generation info
+      console.log(`🎨 Design ready! Method: ${generationMethod}`);
       
     } catch (error) {
       console.error('Generation error:', error);

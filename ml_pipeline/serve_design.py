@@ -23,6 +23,30 @@ from design_schema import (
     EXAMPLE_BLUEPRINT,
 )
 
+# Import modern design system
+from modern_design_system import (
+    MODERN_COLOR_SCHEMES,
+    MODERN_LAYOUTS,
+    MODERN_FONTS,
+    MODERN_HEADLINES,
+    MODERN_SUBHEADLINES,
+    MODERN_CTAS,
+    detect_category,
+    generate_modern_decorations
+)
+from modern_blueprint_generator import generate_modern_design_blueprint
+
+# Import retail design system
+from retail_design_system import (
+    RetailDesignGenerator,
+    Platform,
+    DesignTone,
+    RETAIL_COLOR_PALETTES,
+    PLATFORM_SPECS,
+    ComplianceEngine,
+    create_protein_bar_creative
+)
+
 # =============================================================================
 # APP SETUP
 # =============================================================================
@@ -81,6 +105,40 @@ class ComplianceCheckResponse(BaseModel):
     compliant: bool
     issues: List[str]
     suggestions: List[str]
+
+
+class RetailCreativeRequest(BaseModel):
+    """Request for retail-focused creative generation"""
+    brand_name: str = Field(..., description="Brand name")
+    brand_colors: Dict[str, str] = Field(
+        default={"primary": "#1E1E2F", "accent": "#F5B700", "secondary": "#FFFFFF"},
+        description="Brand color palette with primary, accent, secondary"
+    )
+    headline: str = Field(..., description="Main headline text")
+    subheadline: Optional[str] = Field(default=None, description="Secondary headline")
+    cta: str = Field(default="Shop Now", description="Call to action text")
+    offer: Optional[str] = Field(default=None, description="Offer text e.g. '20% OFF'")
+    trust_signals: Optional[List[Dict[str, str]]] = Field(
+        default=None,
+        description="Trust badges e.g. [{'icon': '🌱', 'text': 'Plant-Based'}]"
+    )
+    products: Optional[List[Dict[str, Any]]] = Field(
+        default=None,
+        description="Product information with images"
+    )
+    platform: str = Field(default="instagram_feed", description="Target platform")
+    tone: str = Field(default="bold_fmcg", description="Design tone")
+    logo_url: Optional[str] = Field(default=None, description="Logo image URL")
+
+
+class RetailCreativeResponse(BaseModel):
+    """Response with generated retail creative"""
+    success: bool
+    design: Dict[str, Any]
+    variants: Optional[List[Dict[str, Any]]] = None
+    all_formats: Optional[Dict[str, Dict[str, Any]]] = None
+    compliance: Dict[str, Any]
+    message: Optional[str] = None
 
 # =============================================================================
 # DESIGN GENERATION (Fallback/Rule-based)
@@ -213,155 +271,19 @@ def generate_subheadline(prompt: str) -> str:
 
 def generate_design_blueprint(request: DesignRequest) -> Dict[str, Any]:
     """
-    Generate a complete design blueprint.
-    Uses model if available, otherwise falls back to rule-based generation.
+    Generate a complete MODERN design blueprint.
+    Creates professional advertising-quality posters.
     """
-    
-    # Get format dimensions
-    format_key = request.format.lower()
-    if format_key == "square":
-        width, height = 1080, 1080
-    elif format_key == "story":
-        width, height = 1080, 1920
-    elif format_key == "landscape":
-        width, height = 1200, 628
-    elif format_key == "portrait":
-        width, height = 1080, 1350
-    elif format_key == "wide":
-        width, height = 1920, 1080
-    else:
-        width, height = 1080, 1080
-    
-    # Select palette based on tone
-    tone = request.tone or "professional"
-    palettes = COLOR_PALETTES.get(tone, COLOR_PALETTES["professional"])
-    palette = random.choice(palettes)
-    
-    # Override with brand colors if provided
-    if request.brand_colors and len(request.brand_colors) >= 2:
-        palette["primary"] = request.brand_colors[0]
-        palette["secondary"] = request.brand_colors[1]
-        if len(request.brand_colors) >= 3:
-            palette["accent"] = request.brand_colors[2]
-    
-    # Select layout
-    layout_name = random.choice(list(LAYOUTS.keys()))
-    layout = LAYOUTS[layout_name]
-    
-    # Generate content
-    headline = generate_headline(request.prompt)
-    subheadline = generate_subheadline(request.prompt)
-    cta = random.choice(CTA_OPTIONS)
-    
-    # Font selection
-    font = request.brand_fonts[0] if request.brand_fonts else "Inter"
-    
-    # Font size based on format
-    headline_size = 72 if format_key == "square" else (56 if format_key == "story" else 48)
-    subheadline_size = 24 if format_key == "square" else 20
-    
-    # Build elements
-    elements = []
-    
-    # Headline
-    hl = layout["headline"]
-    elements.append({
-        "type": "text",
-        "id": "headline_1",
-        "content": headline,
-        "style": "headline",
-        "position": {"x": hl["x"], "y": hl["y"]},
-        "size": {"width": hl["w"], "height": hl["h"]},
-        "font_family": font,
-        "font_size": headline_size,
-        "font_weight": 700,
-        "color": palette["text_primary"],
-        "align": "center" if layout_name == "centered" else "left",
-        "line_height": 1.1,
-        "letter_spacing": -1
-    })
-    
-    # Subheadline
-    sh = layout["subheadline"]
-    elements.append({
-        "type": "text",
-        "id": "subheadline_1",
-        "content": subheadline,
-        "style": "subheadline",
-        "position": {"x": sh["x"], "y": sh["y"]},
-        "size": {"width": sh["w"], "height": sh["h"]},
-        "font_family": font,
-        "font_size": subheadline_size,
-        "font_weight": 400,
-        "color": palette["text_secondary"],
-        "align": "center" if layout_name == "centered" else "left",
-        "line_height": 1.4,
-        "letter_spacing": 0
-    })
-    
-    # CTA Button
-    cta_pos = layout["cta"]
-    elements.append({
-        "type": "cta_button",
-        "id": "cta_1",
-        "text": cta,
-        "position": {"x": cta_pos["x"], "y": cta_pos["y"]},
-        "size": {"width": cta_pos["w"], "height": cta_pos["h"]},
-        "background_color": palette["primary"],
-        "text_color": "#FFFFFF",
-        "font_size": 18,
-        "font_weight": 600,
-        "corner_radius": random.choice([8, 12, 24, 100]),
-        "padding": 16
-    })
-    
-    # Add accent shapes
-    accent_shapes = [
-        {"type": "circle", "x": 80, "y": 10, "w": 15, "h": 15, "opacity": 0.2},
-        {"type": "circle", "x": 5, "y": 75, "w": 20, "h": 20, "opacity": 0.15},
-    ]
-    
-    for i, shape in enumerate(accent_shapes):
-        elements.append({
-            "type": "shape",
-            "id": f"accent_{i}",
-            "shape_type": shape["type"],
-            "position": {"x": shape["x"], "y": shape["y"]},
-            "size": {"width": shape["w"], "height": shape["h"]},
-            "fill_color": palette["primary"],
-            "stroke_color": None,
-            "stroke_width": 0,
-            "opacity": shape["opacity"],
-            "corner_radius": 0
-        })
-    
-    # Build blueprint
-    blueprint = {
-        "metadata": {
-            "platform": request.platform,
-            "format": request.format,
-            "width": width,
-            "height": height,
-            "industry": request.industry,
-            "campaign_type": "general",
-            "target_audience": "general"
-        },
-        "headline": headline,
-        "subheadline": subheadline,
-        "body_text": None,
-        "cta_text": cta,
-        "background": {
-            "type": "background",
-            "color": palette["background"],
-            "gradient": None,
-            "image_placeholder": None
-        },
-        "color_palette": palette,
-        "elements": elements,
-        "design_notes": f"Generated {tone} design with {layout_name} layout."
-    }
-    
-    return blueprint
+    return generate_modern_design_blueprint(
+        request, 
+        MODERN_COLOR_SCHEMES, 
+        MODERN_LAYOUTS,
+        MODERN_HEADLINES, 
+        MODERN_SUBHEADLINES, 
+        MODERN_CTAS,
+        MODERN_FONTS, 
+        detect_category
+    )
 
 def blueprint_to_fabric(blueprint: Dict[str, Any]) -> Dict[str, Any]:
     """Convert blueprint to Fabric.js JSON format"""
@@ -471,7 +393,7 @@ def blueprint_to_fabric(blueprint: Dict[str, Any]) -> Dict[str, Any]:
 # =============================================================================
 
 def load_model(model_path: str):
-    """Load the fine-tuned design model"""
+    """Load the fine-tuned design model (supports both full models and LoRA adapters)"""
     global model, tokenizer, model_loaded
     
     model_path = Path(model_path)
@@ -483,29 +405,171 @@ def load_model(model_path: str):
     try:
         print(f"🔄 Loading model from {model_path}")
         
-        tokenizer = AutoTokenizer.from_pretrained(model_path)
-        if tokenizer.pad_token is None:
-            tokenizer.pad_token = tokenizer.eos_token
+        # Check if this is a LoRA adapter
+        adapter_config_path = model_path / "adapter_config.json"
+        is_lora_adapter = adapter_config_path.exists()
         
-        model = AutoModelForCausalLM.from_pretrained(
-            model_path,
-            torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
-            device_map="auto" if torch.cuda.is_available() else None,
-        )
+        if is_lora_adapter:
+            print("📎 Detected LoRA adapter, loading with PEFT...")
+            import json
+            with open(adapter_config_path) as f:
+                adapter_config = json.load(f)
+            
+            base_model_name = adapter_config.get("base_model_name_or_path", "gpt2-medium")
+            print(f"   Base model: {base_model_name}")
+            
+            # Load tokenizer from adapter path
+            tokenizer = AutoTokenizer.from_pretrained(model_path)
+            if tokenizer.pad_token is None:
+                tokenizer.pad_token = tokenizer.eos_token
+            
+            # Load base model
+            print(f"   Loading base model {base_model_name}...")
+            base_model = AutoModelForCausalLM.from_pretrained(
+                base_model_name,
+                torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
+                device_map="auto" if torch.cuda.is_available() else None,
+            )
+            
+            # Load LoRA adapter
+            print(f"   Loading LoRA adapter...")
+            model = PeftModel.from_pretrained(base_model, model_path)
+            model = model.merge_and_unload()  # Merge for faster inference
+            print("   ✅ LoRA adapter merged with base model")
+        else:
+            # Regular model loading
+            tokenizer = AutoTokenizer.from_pretrained(model_path)
+            if tokenizer.pad_token is None:
+                tokenizer.pad_token = tokenizer.eos_token
+            
+            model = AutoModelForCausalLM.from_pretrained(
+                model_path,
+                torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
+                device_map="auto" if torch.cuda.is_available() else None,
+            )
+        
         model.eval()
-        
         model_loaded = True
         print("✅ Model loaded successfully")
         return True
         
     except Exception as e:
         print(f"❌ Failed to load model: {e}")
+        import traceback
+        traceback.print_exc()
         model_loaded = False
         return False
+
+def fix_json_string(json_str: str) -> str:
+    """Fix common JSON issues from model output"""
+    import re
+    
+    # Remove control characters
+    json_str = re.sub(r'[\x00-\x1f\x7f-\x9f]', '', json_str)
+    
+    # Fix trailing commas before } or ]
+    json_str = re.sub(r',\s*}', '}', json_str)
+    json_str = re.sub(r',\s*]', ']', json_str)
+    
+    # Fix missing quotes around keys (if word followed by colon without quotes)
+    json_str = re.sub(r'(\{|,)\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*:', r'\1"\2":', json_str)
+    
+    # Fix single quotes to double quotes
+    json_str = json_str.replace("'", '"')
+    
+    # Fix escaped newlines in strings
+    json_str = json_str.replace('\\n', ' ')
+    
+    return json_str
+
+def extract_json_from_text(text: str) -> Optional[Dict[str, Any]]:
+    """Extract valid JSON from model output using multiple strategies"""
+    import re
+    
+    # Debug: print first 500 chars of output to understand structure
+    print(f"📄 Raw model output preview: {text[:500]}...")
+    
+    # Strategy 1: Find balanced braces
+    json_start = text.find('{')
+    if json_start == -1:
+        print("❌ No opening brace found in output")
+        return None
+    
+    depth = 0
+    best_json = None
+    for i, char in enumerate(text[json_start:], json_start):
+        if char == '{':
+            depth += 1
+        elif char == '}':
+            depth -= 1
+            if depth == 0:
+                json_str = text[json_start:i+1]
+                print(f"📋 Found potential JSON ({len(json_str)} chars)")
+                try:
+                    # Try direct parsing
+                    result = json.loads(json_str)
+                    print("✅ Direct JSON parse succeeded!")
+                    return result
+                except json.JSONDecodeError as e:
+                    print(f"⚠️ Direct parse failed: {e}")
+                    # Try with fixes
+                    fixed = fix_json_string(json_str)
+                    try:
+                        result = json.loads(fixed)
+                        print("✅ Fixed JSON parse succeeded!")
+                        return result
+                    except json.JSONDecodeError as e2:
+                        print(f"⚠️ Fixed parse also failed: {e2}")
+                        # Store the best attempt
+                        if best_json is None:
+                            best_json = json_str
+                # Continue looking for another valid JSON
+    
+    # Strategy 2: Try to build a minimal valid design from partial output
+    if best_json:
+        print(f"🔧 Attempting to salvage partial JSON...")
+        # Try to extract key-value pairs manually
+        try:
+            # Extract headline if present
+            headline_match = re.search(r'"headline"\s*:\s*"([^"]*)"', text)
+            background_match = re.search(r'"background"\s*:\s*"([^"]*)"', text)
+            
+            if headline_match:
+                salvaged = {
+                    "headline": headline_match.group(1),
+                    "background": background_match.group(1) if background_match else "#1a1a2e",
+                    "elements": []
+                }
+                print(f"✅ Salvaged basic design from partial output")
+                return salvaged
+        except Exception as e:
+            print(f"❌ Salvage failed: {e}")
+    
+    # Strategy 3: Try regex patterns for known structures
+    patterns = [
+        r'\{[^{}]*"elements"\s*:\s*\[[^\]]*\][^{}]*\}',
+        r'\{[^{}]*"objects"\s*:\s*\[[^\]]*\][^{}]*\}',
+        r'\{[^{}]*"headline"\s*:[^{}]*\}',
+    ]
+    
+    for pattern in patterns:
+        matches = re.findall(pattern, text, re.DOTALL)
+        for match in matches:
+            try:
+                result = json.loads(fix_json_string(match))
+                print(f"✅ Pattern match succeeded!")
+                return result
+            except:
+                continue
+    
+    print("❌ All extraction strategies failed")
+    return None
+
 
 def generate_with_model(request: DesignRequest) -> Optional[Dict[str, Any]]:
     """Generate design using the trained model"""
     if not model_loaded or model is None:
+        print("⚠️ Model not loaded, skipping model generation")
         return None
     
     prompt_text = f"""You are an AI ad design assistant. Generate a complete design blueprint in JSON format.
@@ -520,31 +584,38 @@ Prompt: {request.prompt}
 Generate the design blueprint JSON:"""
     
     try:
-        inputs = tokenizer(prompt_text, return_tensors="pt", truncation=True, max_length=512)
+        print(f"🧠 Attempting model generation for: {request.prompt[:50]}...")
+        inputs = tokenizer(prompt_text, return_tensors="pt", truncation=True, max_length=256)
         inputs = {k: v.to(model.device) for k, v in inputs.items()}
         
         with torch.no_grad():
             outputs = model.generate(
                 **inputs,
-                max_new_tokens=1000,
-                temperature=0.7,
+                max_new_tokens=500,  # Slightly increased for better JSON completion
+                temperature=0.6,     # Lowered for more coherent output
                 top_p=0.9,
                 do_sample=True,
                 pad_token_id=tokenizer.pad_token_id,
+                use_cache=True,
             )
         
         text = tokenizer.decode(outputs[0], skip_special_tokens=True)
+        print(f"📝 Model raw output length: {len(text)} chars")
         
-        # Extract JSON
-        json_start = text.find('{')
-        json_end = text.rfind('}') + 1
+        # Use improved JSON extraction
+        result = extract_json_from_text(text)
         
-        if json_start != -1 and json_end > json_start:
-            json_str = text[json_start:json_end]
-            return json.loads(json_str)
+        if result:
+            print(f"✅ Model generated valid design JSON!")
+            return result
+        
+        print(f"⚠️ Could not extract valid JSON from model output")
+        return None
     
     except Exception as e:
-        print(f"Model generation failed: {e}")
+        print(f"❌ Model generation failed: {e}")
+        import traceback
+        traceback.print_exc()
     
     return None
 
@@ -574,6 +645,27 @@ async def health():
         "gpu_available": torch.cuda.is_available()
     }
 
+
+@app.get("/model-info")
+async def model_info():
+    """Get information about the loaded model"""
+    if model_loaded and model is not None:
+        return {
+            "model_loaded": True,
+            "model_type": "fine_tuned_lora" if hasattr(model, 'peft_config') else "full_model",
+            "base_model": "gpt2-medium",
+            "device": str(model.device) if hasattr(model, 'device') else "cpu",
+            "inference_ready": True,
+            "message": "Trained model is loaded and ready for inference"
+        }
+    else:
+        return {
+            "model_loaded": False,
+            "model_type": None,
+            "inference_ready": False,
+            "message": "No model loaded. Using rule-based generation as fallback."
+        }
+
 @app.post("/generate", response_model=DesignResponse)
 async def generate_design(request: DesignRequest):
     """
@@ -583,21 +675,40 @@ async def generate_design(request: DesignRequest):
     try:
         # Try model first if available
         blueprint = None
+        generation_method = "rule_based"
+        
         if model_loaded:
             blueprint = generate_with_model(request)
+            if blueprint is not None:
+                generation_method = "trained_model"
         
         # Fallback to rule-based generation
         if blueprint is None:
+            print(f"\n🎨 Generating MODERN design for: {request.prompt}")
             blueprint = generate_design_blueprint(request)
+            generation_method = "rule_based"
         
         # Convert to Fabric.js format
         fabric_json = blueprint_to_fabric(blueprint)
+        
+        # Add generation metadata
+        blueprint["_generation_info"] = {
+            "method": generation_method,
+            "model_loaded": model_loaded,
+            "timestamp": str(Path(".")),  # Will be replaced with actual timestamp
+        }
+        
+        # Log which method was used
+        if generation_method == "trained_model":
+            print(f"✅ Design generated using TRAINED MODEL")
+        else:
+            print(f"📋 Design generated using RULE-BASED SYSTEM (fallback)")
         
         return DesignResponse(
             success=True,
             blueprint=blueprint,
             fabric_json=fabric_json,
-            message="Design generated successfully"
+            message=f"Design generated successfully using {generation_method}"
         )
     
     except Exception as e:
@@ -706,6 +817,318 @@ async def refine_design(
         "success": True,
         "blueprint": blueprint,
         "message": f"Refinement noted: {instruction}. Model refinement coming soon."
+    }
+
+
+# =============================================================================
+# RETAIL DESIGN ENDPOINTS
+# =============================================================================
+
+@app.post("/retail/generate", response_model=RetailCreativeResponse)
+async def generate_retail_creative(request: RetailCreativeRequest):
+    """
+    Generate agency-grade retail creative for D2C, FMCG, and e-commerce.
+    Returns design with variants and multi-platform formats.
+    """
+    try:
+        generator = RetailDesignGenerator()
+        
+        # Map string platform to enum
+        platform_map = {
+            "instagram_feed": Platform.INSTAGRAM_FEED,
+            "instagram_story": Platform.INSTAGRAM_STORY,
+            "facebook_feed": Platform.FACEBOOK_FEED,
+            "facebook_story": Platform.FACEBOOK_STORY,
+            "amazon_main": Platform.AMAZON_MAIN,
+            "amazon_lifestyle": Platform.AMAZON_LIFESTYLE,
+            "flipkart_banner": Platform.FLIPKART_BANNER,
+            "google_display": Platform.GOOGLE_DISPLAY,
+        }
+        
+        tone_map = {
+            "bold_fmcg": DesignTone.BOLD_FMCG,
+            "premium_modern": DesignTone.PREMIUM_MODERN,
+            "luxury_dark": DesignTone.LUXURY_DARK,
+            "clean_retail": DesignTone.CLEAN_RETAIL,
+            "vibrant_playful": DesignTone.VIBRANT_PLAYFUL,
+            "tech_modern": DesignTone.TECH_MODERN,
+            "trust_corporate": DesignTone.TRUST_CORPORATE,
+        }
+        
+        platform = platform_map.get(request.platform, Platform.INSTAGRAM_FEED)
+        tone = tone_map.get(request.tone, DesignTone.BOLD_FMCG)
+        
+        brand_config = {
+            "brand_name": request.brand_name,
+            "brand_colors": request.brand_colors,
+            "logo_url": request.logo_url or ""
+        }
+        
+        content = {
+            "headline": request.headline,
+            "subheadline": request.subheadline or "",
+            "cta": request.cta,
+            "offer": request.offer,
+            "trust_signals": request.trust_signals or [],
+            "products": request.products or [],
+            "logo_url": request.logo_url or ""
+        }
+        
+        # Generate primary design
+        design = generator.generate_creative(
+            brand_config=brand_config,
+            content=content,
+            platform=platform,
+            tone=tone
+        )
+        
+        # Generate variants
+        variants = generator.generate_variants(design)
+        
+        # Generate all formats
+        all_formats = generator.generate_all_formats(
+            design,
+            [Platform.INSTAGRAM_FEED, Platform.INSTAGRAM_STORY, 
+             Platform.FACEBOOK_FEED, Platform.AMAZON_LIFESTYLE]
+        )
+        
+        # Convert enum keys to strings for JSON serialization
+        all_formats_serializable = {
+            str(k.value) if hasattr(k, 'value') else str(k): v 
+            for k, v in all_formats.items()
+        }
+        
+        return RetailCreativeResponse(
+            success=True,
+            design=design,
+            variants=variants,
+            all_formats=all_formats_serializable,
+            compliance=design.get("compliance", {}),
+            message="Retail creative generated successfully"
+        )
+        
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/retail/palettes")
+async def get_retail_palettes():
+    """Get available retail color palettes"""
+    return {
+        "palettes": {
+            name: {
+                "name": palette["name"],
+                "description": palette["description"],
+                "preview": {
+                    "primary": palette["primary"],
+                    "accent": palette["accent"],
+                    "background": palette["background"]["css"] if isinstance(palette["background"], dict) else palette["background"]
+                }
+            }
+            for name, palette in RETAIL_COLOR_PALETTES.items()
+        }
+    }
+
+
+@app.get("/retail/platforms")
+async def get_retail_platforms():
+    """Get supported platforms and their specifications"""
+    return {
+        "platforms": {
+            platform.value: {
+                "name": spec["name"],
+                "dimensions": spec["dimensions"],
+                "aspect_ratios": spec["aspect_ratios"],
+                "max_file_size_kb": spec["max_file_size_kb"],
+            }
+            for platform, spec in PLATFORM_SPECS.items()
+        }
+    }
+
+
+@app.get("/retail/demo")
+async def get_retail_demo():
+    """Get demo protein bar creative (as shown in the design brief)"""
+    try:
+        result = create_protein_bar_creative()
+        return {
+            "success": True,
+            "demo_creative": result,
+            "message": "Demo creative for Plant-Based Protein Bar campaign"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/retail/compliance-check")
+async def check_retail_compliance(
+    design: Dict[str, Any],
+    platform: str
+):
+    """Run AI compliance check on a retail design"""
+    try:
+        platform_map = {
+            "instagram_feed": Platform.INSTAGRAM_FEED,
+            "instagram_story": Platform.INSTAGRAM_STORY,
+            "facebook_feed": Platform.FACEBOOK_FEED,
+            "amazon_main": Platform.AMAZON_MAIN,
+            "amazon_lifestyle": Platform.AMAZON_LIFESTYLE,
+            "flipkart_banner": Platform.FLIPKART_BANNER,
+        }
+        
+        platform_enum = platform_map.get(platform, Platform.INSTAGRAM_FEED)
+        
+        compliance_engine = ComplianceEngine()
+        result = compliance_engine.check_design(design, platform_enum)
+        
+        return {
+            "success": True,
+            "compliance": result,
+            "is_compliant": result["summary"]["is_compliant"],
+            "message": "Compliance check completed"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/retail/auto-fix")
+async def auto_fix_retail_design(
+    design: Dict[str, Any],
+    platform: str
+):
+    """Apply AI auto-fixes to resolve compliance issues"""
+    try:
+        platform_map = {
+            "instagram_feed": Platform.INSTAGRAM_FEED,
+            "instagram_story": Platform.INSTAGRAM_STORY,
+            "facebook_feed": Platform.FACEBOOK_FEED,
+            "amazon_main": Platform.AMAZON_MAIN,
+        }
+        
+        platform_enum = platform_map.get(platform, Platform.INSTAGRAM_FEED)
+        
+        compliance_engine = ComplianceEngine()
+        result = compliance_engine.auto_fix_all(design, platform_enum)
+        
+        return {
+            "success": True,
+            "fixed_design": result["design"],
+            "fixes_applied": result["fixes_applied"],
+            "remaining_issues": result["remaining_issues"],
+            "message": f"Applied {len(result['fixes_applied'])} auto-fixes"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# =============================================================================
+# DESIGN STORAGE ENDPOINTS
+# =============================================================================
+
+import os
+from datetime import datetime
+import base64
+
+# Storage directory for generated designs
+DESIGNS_DIR = Path("generated_designs")
+DESIGNS_DIR.mkdir(exist_ok=True)
+
+
+@app.post("/save-design")
+async def save_design(
+    design_id: str,
+    design_data: Dict[str, Any],
+    image_data: Optional[str] = None  # Base64 encoded image
+):
+    """Save a generated design to storage"""
+    try:
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        
+        # Save design JSON
+        design_path = DESIGNS_DIR / f"{design_id}_{timestamp}.json"
+        with open(design_path, "w") as f:
+            json.dump(design_data, f, indent=2, default=str)
+        
+        image_path = None
+        
+        # Save image if provided
+        if image_data:
+            # Remove data URL prefix if present
+            if image_data.startswith("data:image"):
+                image_data = image_data.split(",")[1]
+            
+            image_bytes = base64.b64decode(image_data)
+            image_path = DESIGNS_DIR / f"{design_id}_{timestamp}.png"
+            with open(image_path, "wb") as f:
+                f.write(image_bytes)
+        
+        return {
+            "success": True,
+            "design_id": design_id,
+            "design_path": str(design_path),
+            "image_path": str(image_path) if image_path else None,
+            "timestamp": timestamp
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/saved-designs")
+async def list_saved_designs():
+    """List all saved designs"""
+    try:
+        designs = []
+        for file in DESIGNS_DIR.glob("*.json"):
+            with open(file, "r") as f:
+                design = json.load(f)
+                designs.append({
+                    "filename": file.name,
+                    "design_id": file.stem.split("_")[0],
+                    "created": file.stat().st_mtime,
+                    "has_image": (file.with_suffix(".png")).exists()
+                })
+        
+        return {
+            "success": True,
+            "count": len(designs),
+            "designs": sorted(designs, key=lambda x: x["created"], reverse=True)
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/generation-status")
+async def generation_status():
+    """Get current status of design generation capabilities"""
+    return {
+        "service": "AdGenesis ML Design Service",
+        "version": "3.0.0",
+        "capabilities": {
+            "trained_model": {
+                "available": model_loaded,
+                "model_type": "GPT-2 Medium with LoRA fine-tuning",
+                "status": "active" if model_loaded else "not_loaded"
+            },
+            "rule_based": {
+                "available": True,
+                "status": "active (fallback)"
+            },
+            "retail_system": {
+                "available": True,
+                "palettes": len(RETAIL_COLOR_PALETTES),
+                "platforms": len(PLATFORM_SPECS)
+            }
+        },
+        "generation_priority": [
+            "1. Trained ML Model (if loaded and generates valid output)",
+            "2. Rule-Based Modern Design System (fallback)"
+        ],
+        "storage": {
+            "directory": str(DESIGNS_DIR),
+            "saved_designs": len(list(DESIGNS_DIR.glob("*.json")))
+        }
     }
 
 # =============================================================================

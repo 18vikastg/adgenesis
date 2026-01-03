@@ -81,15 +81,25 @@ async def generate_ai_design(prompt: str, platform: str, format: str) -> dict:
         # Get platform specifications
         specs = PLATFORM_SPECS.get(platform, {}).get(format, {"width": 1080, "height": 1080})
         
-        # Generate design specification using model adapter
-        design_spec = await model_adapter.generate_design_spec(
+        # Generate design using model adapter
+        result = await model_adapter.generate_design_spec(
             prompt=prompt,
             platform=platform,
             format=format,
             specs=specs,
         )
         
-        # Convert to Fabric.js canvas format
+        # If custom model returned modern design with fabric_json, use it directly
+        if "fabric_json" in result:
+            return result["fabric_json"]
+        
+        # If blueprint structure exists (from modern design system), use it
+        if "blueprint" in result:
+            blueprint = result["blueprint"]
+            return convert_modern_blueprint_to_fabric(blueprint, specs)
+        
+        # Fallback: Old-style design_spec conversion
+        design_spec = result
         canvas_data = {
             "version": "5.3.0",
             "objects": [],
@@ -98,7 +108,7 @@ async def generate_ai_design(prompt: str, platform: str, format: str) -> dict:
             "height": specs["height"],
         }
         
-        # Add design elements
+        # Add design elements (old format)
         for element in design_spec.get("elements", []):
             if element["type"] == "text":
                 canvas_data["objects"].append({
@@ -123,6 +133,8 @@ async def generate_ai_design(prompt: str, platform: str, format: str) -> dict:
         return canvas_data
     except Exception as e:
         print(f"Error generating design: {e}")
+        import traceback
+        traceback.print_exc()
         # Return a simple fallback design
         return {
             "version": "5.3.0",
@@ -137,9 +149,125 @@ async def generate_ai_design(prompt: str, platform: str, format: str) -> dict:
                 }
             ],
             "background": "#ffffff",
-            "width": specs["width"],
-            "height": specs["height"],
+            "width": specs.get("width", 1080),
+            "height": specs.get("height", 1080),
         }
+
+
+def convert_modern_blueprint_to_fabric(blueprint: dict, specs: dict) -> dict:
+    """
+    Convert modern design blueprint to Fabric.js format
+    Handles our new modern professional designs
+    """
+    metadata = blueprint.get("metadata", {})
+    elements = blueprint.get("elements", [])
+    background = blueprint.get("background", {})
+    
+    width = metadata.get("width", specs.get("width", 1080))
+    height = metadata.get("height", specs.get("height", 1080))
+    
+    # Handle gradient backgrounds
+    bg_color = background.get("color", "#ffffff")
+    
+    fabric_objects = []
+    
+    # Convert each element to Fabric.js object
+    for element in elements:
+        elem_type = element.get("type")
+        position = element.get("position", {})
+        size = element.get("size", {})
+        
+        # Convert percentage positions to pixels
+        left = (position.get("x", 0) / 100) * width
+        top = (position.get("y", 0) / 100) * height
+        elem_width = (size.get("width", 10) / 100) * width
+        elem_height = (size.get("height", 10) / 100) * height
+        
+        if elem_type == "text":
+            fabric_objects.append({
+                "type": "textbox",
+                "text": element.get("content", ""),
+                "left": left,
+                "top": top,
+                "width": elem_width,
+                "fontSize": element.get("font_size", 24),
+                "fontFamily": element.get("font_family", "Arial"),
+                "fontWeight": element.get("font_weight", 400),
+                "fill": element.get("color", "#000000"),
+                "textAlign": element.get("align", "left"),
+                "lineHeight": element.get("line_height", 1.2),
+                "charSpacing": element.get("letter_spacing", 0) * 10,  # Convert to Fabric units
+                "opacity": element.get("opacity", 1),
+            })
+        
+        elif elem_type == "shape":
+            shape_type = element.get("shape_type", "rectangle")
+            
+            if shape_type == "circle":
+                fabric_objects.append({
+                    "type": "circle",
+                    "left": left,
+                    "top": top,
+                    "radius": elem_width / 2,  # Use width as diameter
+                    "fill": element.get("fill_color", "#000000"),
+                    "stroke": element.get("stroke_color"),
+                    "strokeWidth": element.get("stroke_width", 0),
+                    "opacity": element.get("opacity", 1),
+                })
+            
+            elif shape_type == "rectangle" or shape_type == "line":
+                fabric_objects.append({
+                    "type": "rect",
+                    "left": left,
+                    "top": top,
+                    "width": elem_width,
+                    "height": elem_height,
+                    "fill": element.get("fill_color", "#000000"),
+                    "stroke": element.get("stroke_color"),
+                    "strokeWidth": element.get("stroke_width", 0),
+                    "rx": element.get("corner_radius", 0),
+                    "ry": element.get("corner_radius", 0),
+                    "opacity": element.get("opacity", 1),
+                    "angle": element.get("rotation", 0),
+                })
+        
+        elif elem_type == "cta_button":
+            # CTA button as rounded rectangle with text
+            button_bg = {
+                "type": "rect",
+                "left": left,
+                "top": top,
+                "width": elem_width,
+                "height": elem_height,
+                "fill": element.get("background_color", "#0000ff"),
+                "rx": element.get("corner_radius", 8),
+                "ry": element.get("corner_radius", 8),
+                "opacity": 1,
+            }
+            fabric_objects.append(button_bg)
+            
+            # Button text
+            button_text = {
+                "type": "textbox",
+                "text": element.get("text", "Click Here"),
+                "left": left + elem_width / 2,
+                "top": top + elem_height / 2,
+                "fontSize": element.get("font_size", 18),
+                "fontWeight": element.get("font_weight", 600),
+                "fill": element.get("text_color", "#ffffff"),
+                "textAlign": "center",
+                "originX": "center",
+                "originY": "center",
+            }
+            fabric_objects.append(button_text)
+    
+    return {
+        "version": "5.3.0",
+        "objects": fabric_objects,
+        "background": bg_color,
+        "width": width,
+        "height": height,
+    }
 
 
 async def extract_guideline_data(file_path: str) -> dict:

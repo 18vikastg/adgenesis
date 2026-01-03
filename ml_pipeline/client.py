@@ -55,11 +55,11 @@ class MLModelClient:
         response.raise_for_status()
         return response.json()
     
-    async def list_models(self) -> list:
-        """List available models"""
-        response = await self.client.get(f"{self.base_url}/models")
+    async def get_templates(self) -> dict:
+        """Get available design templates"""
+        response = await self.client.get(f"{self.base_url}/templates")
         response.raise_for_status()
-        return response.json()["models"]
+        return response.json()
     
     async def close(self):
         """Close the client connection"""
@@ -88,9 +88,11 @@ async def example_usage():
         )
         print(f"Generated design: {json.dumps(design, indent=2)}")
         
-        # List models
-        models = await client.list_models()
-        print(f"Available models: {models}")
+        # Get available templates (instead of list_models which doesn't exist)
+        templates = await client.get_templates()
+        print(f"\nAvailable templates: {len(templates.get('templates', []))} templates loaded")
+        if templates.get('templates'):
+            print("  Template categories:", set(t['category'] for t in templates['templates']))
 
 
 if __name__ == "__main__":
