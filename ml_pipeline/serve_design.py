@@ -979,6 +979,141 @@ async def get_image_models():
     }
 
 
+# =============================================================================
+# DESIGN REVERSE-ENGINEERING (Image Analysis)
+# =============================================================================
+
+# Import design analyzer
+try:
+    from design_analyzer import (
+        DesignAnalyzer,
+        design_analyzer,
+        convert_blueprint_to_fabric,
+        analyze_image_from_base64,
+    )
+    ANALYZER_AVAILABLE = True
+    print("✓ Design Analyzer loaded")
+except ImportError as e:
+    ANALYZER_AVAILABLE = False
+    print(f"⚠ Design Analyzer not available: {e}")
+
+
+class ImageAnalysisRequest(BaseModel):
+    """Request to analyze an uploaded image and convert to editable layers"""
+    image_data: str = Field(..., description="Base64 encoded image data (with or without data URL prefix)")
+    include_fabric_json: bool = Field(default=True, description="Include Fabric.js JSON output")
+    detect_text: bool = Field(default=True, description="Use OCR to detect text")
+
+
+class ImageAnalysisResponse(BaseModel):
+    """Response with editable design blueprint from analyzed image"""
+    success: bool
+    blueprint: Optional[Dict[str, Any]] = None
+    fabric_json: Optional[Dict[str, Any]] = None
+    layers: Optional[List[Dict[str, Any]]] = None
+    color_palette: Optional[List[str]] = None
+    metadata: Optional[Dict[str, Any]] = None
+    error: Optional[str] = None
+    message: Optional[str] = None
+
+
+@app.post("/analyze-image", response_model=ImageAnalysisResponse)
+async def analyze_uploaded_image(request: ImageAnalysisRequest):
+    """
+    DESIGN REVERSE-ENGINEERING ENGINE
+    
+    Analyzes an uploaded image/poster and converts it into a fully editable
+    design structure with independent layers (like Canva/Figma).
+    
+    The output allows the user to:
+    - Edit all text
+    - Change fonts and colors
+    - Replace images
+    - Resize and reposition elements
+    - Delete or duplicate layers
+    - Add new elements without breaking layout
+    """
+    if not ANALYZER_AVAILABLE:
+        return ImageAnalysisResponse(
+            success=False,
+            error="Design Analyzer module not available",
+            message="Required dependencies may not be installed"
+        )
+    
+    try:
+        print("\n" + "=" * 60)
+        print("🔍 DESIGN REVERSE-ENGINEERING ENGINE")
+        print("=" * 60)
+        
+        # Analyze the image
+        blueprint = analyze_image_from_base64(request.image_data)
+        
+        # Convert to Fabric.js if requested
+        fabric_json = None
+        if request.include_fabric_json:
+            fabric_json = convert_blueprint_to_fabric(blueprint)
+        
+        print(f"\n✅ ANALYSIS COMPLETE")
+        print(f"   Canvas: {blueprint['canvas']['width']}x{blueprint['canvas']['height']}")
+        print(f"   Layers: {len(blueprint['layers'])}")
+        print(f"   Colors: {blueprint['color_palette'][:3]}...")
+        print(f"   Text regions detected: {blueprint['metadata'].get('text_regions_detected', 0)}")
+        
+        return ImageAnalysisResponse(
+            success=True,
+            blueprint=blueprint,
+            fabric_json=fabric_json,
+            layers=blueprint["layers"],
+            color_palette=blueprint["color_palette"],
+            metadata=blueprint["metadata"],
+            message=f"Design analyzed: {len(blueprint['layers'])} editable layers detected"
+        )
+        
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return ImageAnalysisResponse(
+            success=False,
+            error=str(e),
+            message="Failed to analyze image"
+        )
+
+
+@app.get("/analyzer-status")
+async def analyzer_status():
+    """Check design analyzer status and capabilities"""
+    import sys
+    
+    capabilities = {
+        "analyzer_available": ANALYZER_AVAILABLE,
+        "tesseract_ocr": False,
+        "huggingface_vision": False,
+        "basic_analysis": True
+    }
+    
+    # Check Tesseract
+    try:
+        import pytesseract
+        pytesseract.get_tesseract_version()
+        capabilities["tesseract_ocr"] = True
+    except:
+        pass
+    
+    # Check HuggingFace
+    try:
+        from huggingface_hub import InferenceClient
+        if os.getenv("HUGGINGFACE_API_KEY"):
+            capabilities["huggingface_vision"] = True
+    except:
+        pass
+    
+    return {
+        "status": "ready" if ANALYZER_AVAILABLE else "limited",
+        "capabilities": capabilities,
+        "message": "Design analyzer ready" if ANALYZER_AVAILABLE else "Some features may be limited"
+    }
+
+
 @app.get("/templates", response_model=TemplateListResponse)
 async def get_templates():
     """Get list of available design templates"""

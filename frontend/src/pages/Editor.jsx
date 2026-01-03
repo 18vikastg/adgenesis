@@ -354,8 +354,9 @@ const Editor = () => {
 
     fabricRef.current = canvas;
     
-    // Load template if passed in state
+    // Add default background first, imported design will be loaded in separate useEffect
     if (location.state?.template?.design) {
+      // Load template if passed in state
       loadTemplateDesign(location.state.template.design, canvas);
     } else {
       // Add default background
@@ -366,6 +367,178 @@ const Editor = () => {
       canvas.dispose();
       fabricRef.current = null;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Load imported design from sessionStorage (separate effect to ensure canvas is ready)
+  useEffect(() => {
+    // Check for imported design after a brief delay to ensure canvas is initialized
+    const checkForImportedDesign = () => {
+      const importedDesignData = sessionStorage.getItem('importedDesign');
+      if (!importedDesignData) return;
+      
+      if (!fabricRef.current) {
+        // Canvas not ready yet, retry
+        setTimeout(checkForImportedDesign, 100);
+        return;
+      }
+      
+      try {
+        console.log('Found imported design in sessionStorage');
+        const importedDesign = JSON.parse(importedDesignData);
+        sessionStorage.removeItem('importedDesign'); // Clear immediately
+        
+        // Load the design
+        const canvas = fabricRef.current;
+        canvas.clear();
+        
+        const blueprint = importedDesign.blueprint;
+        const layersData = importedDesign.layers || blueprint?.layers || [];
+        const originalImage = importedDesign.originalImage; // The uploaded image
+        
+        console.log('Loading blueprint:', blueprint);
+        console.log('Loading layers:', layersData.length);
+        console.log('Has original image:', !!originalImage);
+        
+        // CRITICAL: Set zoom to 1 so positions match exactly
+        canvas.setZoom(1);
+        setZoom(1);
+        
+        // LOAD THE ORIGINAL IMAGE AS BACKGROUND
+        if (originalImage) {
+          fabric.Image.fromURL(originalImage, (img) => {
+            const imgWidth = img.width;
+            const imgHeight = img.height;
+            
+            console.log('Image dimensions:', imgWidth, 'x', imgHeight);
+            console.log('Layers to add:', layersData);
+            console.log('Text layers:', layersData.filter(l => l.type === 'text'));
+            
+            // Update canvas to match image size exactly
+            canvas.setWidth(imgWidth);
+            canvas.setHeight(imgHeight);
+            setCanvasSize({ width: imgWidth, height: imgHeight });
+            
+            // Add image as background (not editable)
+            img.set({
+              left: 0,
+              top: 0,
+              scaleX: 1,
+              scaleY: 1,
+              selectable: false,
+              evented: false,
+              id: 'background_image',
+            });
+            
+            canvas.add(img);
+            canvas.sendToBack(img);
+            
+            // Add text layers on top - positioned exactly over the original text
+            const textLayers = layersData.filter(l => l.type === 'text');
+            console.log('Adding', textLayers.length, 'text layers to canvas');
+            
+            textLayers.forEach((layer, index) => {
+              const x = layer.position?.x || 100;
+              const y = layer.position?.y || 100;
+              const w = layer.size?.width || 200;
+              const bgColor = layer.background_color || '#000000';
+              const fontSize = layer.font_size || 32;
+              
+              console.log(`Creating text "${layer.content}" at (${x}, ${y})`);
+              
+              // Create editable text with OPAQUE background
+              const textObj = new fabric.Textbox(layer.content || 'Text', {
+                left: x,
+                top: y,
+                width: Math.max(w + 10, 80),
+                fontSize: fontSize,
+                fontFamily: layer.font_family || 'Arial',
+                fontWeight: layer.font_weight || 'bold',
+                fill: layer.color || '#ffffff',
+                textAlign: layer.alignment || 'left',
+                lineHeight: 1.0,
+                editable: true,
+                selectable: true,
+                id: layer.id || `text_${index}`,
+                backgroundColor: bgColor,
+                padding: 4,
+              });
+              
+              canvas.add(textObj);
+              console.log('Added text object to canvas');
+            });
+            
+            canvas.renderAll();
+            console.log('Canvas rendered with', canvas.getObjects().length, 'objects');
+          }, { crossOrigin: 'anonymous' });
+        } else {
+          // No image - just set background color and add layers
+          if (blueprint?.canvas?.background) {
+            const bg = blueprint.canvas.background;
+            if (bg.type === 'solid') {
+              canvas.setBackgroundColor(bg.color || '#1a1a2e', canvas.renderAll.bind(canvas));
+            }
+          } else {
+            canvas.setBackgroundColor('#1a1a2e', canvas.renderAll.bind(canvas));
+          }
+          const cw = blueprint?.canvas?.width || canvasSize.width;
+          const ch = blueprint?.canvas?.height || canvasSize.height;
+          canvas.setWidth(cw);
+          canvas.setHeight(ch);
+          addTextLayers(canvas, layersData, cw, ch);
+        }
+        
+        setProjectName('Imported Design');
+        
+      } catch (e) {
+        console.error('Failed to load imported design:', e);
+      }
+    };
+    
+    // Add editable text layers on top of the image
+    // These COVER the original text so you can edit/delete them
+    const addTextLayers = (canvas, layersData, canvasWidth, canvasHeight) => {
+      const textLayers = layersData.filter(l => l.type === 'text');
+      
+      console.log('Adding', textLayers.length, 'editable text layers');
+      
+      textLayers.forEach((layer, index) => {
+        const x = layer.position?.x || 100;
+        const y = layer.position?.y || 100;
+        const w = layer.size?.width || 200;
+        const h = layer.size?.height || 40;
+        const bgColor = layer.background_color || '#000000';
+        const fontSize = layer.font_size || 32;
+        
+        // Create editable text with OPAQUE background to cover original
+        const textObj = new fabric.Textbox(layer.content || 'Text', {
+          left: x,
+          top: y,
+          width: Math.max(w + 10, 80), // Slightly wider to fully cover
+          fontSize: fontSize,
+          fontFamily: layer.font_family || 'Arial',
+          fontWeight: layer.font_weight || 'bold',
+          fill: layer.color || '#ffffff',
+          textAlign: layer.alignment || 'left',
+          lineHeight: 1.0,
+          editable: true,
+          selectable: true,
+          id: layer.id || `text_${index}`,
+          // OPAQUE background covers original text in image
+          backgroundColor: bgColor,
+          padding: 4,
+        });
+        
+        canvas.add(textObj);
+        console.log(`Text: "${layer.content}" at (${x}, ${y}) with bg ${bgColor}`);
+      });
+      
+      canvas.renderAll();
+    };
+        
+    // Start checking after component mounts
+    setTimeout(checkForImportedDesign, 200);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Load template design onto canvas
@@ -469,6 +642,164 @@ const Editor = () => {
     
     canvas.renderAll();
     saveToHistory();
+  };
+
+  // Load imported design from Analyze page
+  const loadImportedDesign = (importedData, canvas) => {
+    if (!importedData || !canvas) return;
+    
+    console.log('Loading imported design:', importedData);
+    
+    canvas.clear();
+    
+    const blueprint = importedData.blueprint;
+    const layers = importedData.layers || [];
+    
+    // Update canvas size if provided
+    if (blueprint?.canvas) {
+      const newWidth = blueprint.canvas.width || 1080;
+      const newHeight = blueprint.canvas.height || 1080;
+      setCanvasSize({ width: newWidth, height: newHeight });
+    }
+    
+    // Set background
+    if (blueprint?.canvas?.background) {
+      const bg = blueprint.canvas.background;
+      if (bg.type === 'solid') {
+        canvas.setBackgroundColor(bg.color, canvas.renderAll.bind(canvas));
+      } else if (bg.type === 'gradient') {
+        const gradient = new fabric.Gradient({
+          type: 'linear',
+          coords: { 
+            x1: 0, 
+            y1: 0, 
+            x2: bg.angle === 90 ? canvasSize.width : 0, 
+            y2: bg.angle !== 90 ? canvasSize.height : 0 
+          },
+          colorStops: bg.colors?.map((color, i) => ({
+            offset: i / (bg.colors.length - 1 || 1),
+            color: color
+          })) || [
+            { offset: 0, color: '#1a1a2e' },
+            { offset: 1, color: '#16213e' },
+          ],
+        });
+        
+        const bgRect = new fabric.Rect({
+          left: 0,
+          top: 0,
+          width: canvasSize.width,
+          height: canvasSize.height,
+          fill: gradient,
+          selectable: false,
+          evented: false,
+          id: 'background',
+        });
+        canvas.add(bgRect);
+        canvas.sendToBack(bgRect);
+      }
+    } else {
+      // Default dark background
+      canvas.setBackgroundColor('#1a1a2e', canvas.renderAll.bind(canvas));
+    }
+    
+    // Calculate scale factor for display
+    const scale = Math.min(
+      (canvasSize.width * zoom) / (blueprint?.canvas?.width || 1080),
+      (canvasSize.height * zoom) / (blueprint?.canvas?.height || 1080)
+    );
+    
+    // Add layers as editable objects
+    layers.forEach((layer, index) => {
+      let obj = null;
+      
+      if (layer.type === 'text') {
+        // Create editable text box
+        obj = new fabric.Textbox(layer.content || 'Text', {
+          left: layer.position?.x || 100,
+          top: layer.position?.y || 100,
+          width: layer.size?.width || 400,
+          fontSize: layer.font_size || 36,
+          fontFamily: layer.font_family || 'Inter, sans-serif',
+          fontWeight: layer.font_weight || 'normal',
+          fill: layer.color || '#ffffff',
+          textAlign: layer.alignment || 'left',
+          lineHeight: 1.2,
+          id: layer.id || `text_${index}`,
+          role: layer.role,
+          editable: true,
+          selectable: true,
+        });
+        
+        // Style CTA buttons differently
+        if (layer.role === 'cta' && layer.background_color) {
+          // Add background rect for CTA
+          const padding = 20;
+          const ctaBg = new fabric.Rect({
+            left: layer.position?.x - padding,
+            top: layer.position?.y - 10,
+            width: (layer.size?.width || 200) + padding * 2,
+            height: (layer.font_size || 36) + 24,
+            fill: layer.background_color,
+            rx: layer.border_radius || 8,
+            ry: layer.border_radius || 8,
+            id: `${layer.id}_bg`,
+            selectable: true,
+          });
+          canvas.add(ctaBg);
+        }
+      } else if (layer.type === 'image' && !layer.placeholder) {
+        // Image placeholder
+        obj = new fabric.Rect({
+          left: layer.position?.x || 100,
+          top: layer.position?.y || 100,
+          width: layer.size?.width || 200,
+          height: layer.size?.height || 200,
+          fill: 'rgba(139, 92, 246, 0.2)',
+          stroke: '#8b5cf6',
+          strokeWidth: 2,
+          strokeDashArray: [5, 5],
+          id: layer.id || `image_${index}`,
+          role: 'image_placeholder',
+          selectable: true,
+        });
+        
+        // Add placeholder text
+        const placeholderText = new fabric.Text('Drop image here', {
+          left: (layer.position?.x || 100) + (layer.size?.width || 200) / 2,
+          top: (layer.position?.y || 100) + (layer.size?.height || 200) / 2,
+          fontSize: 14,
+          fill: '#8b5cf6',
+          originX: 'center',
+          originY: 'center',
+          selectable: false,
+          evented: false,
+        });
+        canvas.add(placeholderText);
+      } else if (layer.type === 'shape') {
+        obj = new fabric.Rect({
+          left: layer.position?.x || 100,
+          top: layer.position?.y || 100,
+          width: layer.size?.width || 100,
+          height: layer.size?.height || 100,
+          fill: layer.fill || '#8b5cf6',
+          rx: layer.border_radius || 0,
+          ry: layer.border_radius || 0,
+          id: layer.id || `shape_${index}`,
+          selectable: true,
+        });
+      }
+      
+      if (obj) {
+        canvas.add(obj);
+      }
+    });
+    
+    canvas.renderAll();
+    saveToHistory();
+    updateLayers();
+    
+    console.log('Imported design loaded with', layers.length, 'layers');
   };
 
   // Update canvas size

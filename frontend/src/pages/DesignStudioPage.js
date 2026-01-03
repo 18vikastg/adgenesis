@@ -8,6 +8,7 @@ import { useQuery, useQueryClient } from 'react-query';
 import { generateDesign, getDesigns } from '../services/api';
 import { fabric } from 'fabric';
 import { AIAssistant, AIFloatingButton } from '../components/ai/AIAssistant';
+import ImageUploader from '../components/editor/ImageUploader';
 import { 
   Button, 
   Modal, 
@@ -105,6 +106,23 @@ const HistoryIcon = () => (
   </svg>
 );
 
+const UploadIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+    <path d="M9 12V2M9 2L5 6M9 2L13 6" />
+    <path d="M2 12V14C2 15.1 2.9 16 4 16H14C15.1 16 16 15.1 16 14V12" />
+  </svg>
+);
+
+const ScanIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+    <path d="M2 6V4C2 2.9 2.9 2 4 2H6" />
+    <path d="M12 2H14C15.1 2 16 2.9 16 4V6" />
+    <path d="M16 12V14C16 15.1 15.1 16 14 16H12" />
+    <path d="M6 16H4C2.9 16 2 15.1 2 14V12" />
+    <circle cx="9" cy="9" r="3" />
+  </svg>
+);
+
 // Platform specs
 const PLATFORM_SPECS = {
   instagram: {
@@ -178,6 +196,7 @@ const DesignStudioPage = () => {
   // eslint-disable-next-line no-unused-vars
   const [showTemplates, setShowTemplates] = useState(false);
   const [showExport, setShowExport] = useState(false);
+  const [showImageUploader, setShowImageUploader] = useState(false);
   const [activePanel, setActivePanel] = useState('generate');
   const [exportFormat, setExportFormat] = useState('png');
   const [exportQuality, setExportQuality] = useState('high');
@@ -505,6 +524,91 @@ const DesignStudioPage = () => {
     // Implement AI suggestion application
   };
 
+  // Handle design extracted from image upload
+  const handleDesignExtracted = (extractedData) => {
+    console.log('Design extracted:', extractedData);
+    
+    // Close the uploader
+    setShowImageUploader(false);
+    
+    // If we have fabric JSON, load it into the canvas
+    if (extractedData.fabricJson && fabricRef.current) {
+      const canvas = fabricRef.current;
+      
+      // Clear existing content
+      canvas.clear();
+      
+      // Set canvas size from blueprint
+      if (extractedData.blueprint?.canvas) {
+        const blueprintCanvas = extractedData.blueprint.canvas;
+        const scale = Math.min(600 / blueprintCanvas.width, 600 / blueprintCanvas.height);
+        
+        // Set background
+        if (blueprintCanvas.background) {
+          const bg = blueprintCanvas.background;
+          if (bg.type === 'solid') {
+            canvas.setBackgroundColor(bg.color, canvas.renderAll.bind(canvas));
+          } else if (bg.type === 'gradient') {
+            const gradient = new fabric.Gradient({
+              type: 'linear',
+              coords: { x1: 0, y1: 0, x2: 600, y2: 600 },
+              colorStops: bg.colors.map((color, i) => ({
+                offset: i / (bg.colors.length - 1),
+                color,
+              })),
+            });
+            canvas.setBackgroundColor(gradient, canvas.renderAll.bind(canvas));
+          }
+        }
+      }
+      
+      // Load the Fabric.js JSON
+      if (extractedData.fabricJson.objects) {
+        extractedData.fabricJson.objects.forEach((obj) => {
+          // Scale objects to fit canvas
+          const scale = 600 / (extractedData.blueprint?.canvas?.width || 1080);
+          
+          if (obj.type === 'textbox') {
+            const textbox = new fabric.Textbox(obj.text || '', {
+              ...obj,
+              left: (obj.left || 0) * scale,
+              top: (obj.top || 0) * scale,
+              width: obj.width ? obj.width * scale : undefined,
+              fontSize: (obj.fontSize || 24) * scale,
+            });
+            canvas.add(textbox);
+          } else if (obj.type === 'rect') {
+            const rect = new fabric.Rect({
+              ...obj,
+              left: (obj.left || 0) * scale,
+              top: (obj.top || 0) * scale,
+              width: (obj.width || 100) * scale,
+              height: (obj.height || 100) * scale,
+            });
+            canvas.add(rect);
+          }
+        });
+      }
+      
+      canvas.renderAll();
+      
+      // Create a design object for the state
+      const design = {
+        id: generateId(),
+        prompt: 'Imported from image',
+        canvas_data: extractedData.fabricJson,
+        metadata: {
+          source: 'image_import',
+          layers: extractedData.layers?.length || 0,
+          colorPalette: extractedData.colorPalette,
+        },
+      };
+      
+      setCurrentDesign(design);
+      addToHistory(design);
+    }
+  };
+
   return (
     <div className="design-studio">
       {/* Left Sidebar - Tools & Options */}
@@ -525,6 +629,14 @@ const DesignStudioPage = () => {
           >
             <SparklesIcon />
             <span>Generate</span>
+          </button>
+          <button
+            className={cn('sidebar-nav-item', activePanel === 'upload' && 'active')}
+            onClick={() => setShowImageUploader(true)}
+            title="Upload & analyze an existing design"
+          >
+            <ScanIcon />
+            <span>Analyze</span>
           </button>
           <button
             className={cn('sidebar-nav-item', activePanel === 'templates' && 'active')}
@@ -841,6 +953,14 @@ const DesignStudioPage = () => {
           </Button>
         </ModalFooter>
       </Modal>
+
+      {/* Image Uploader / Design Analyzer */}
+      {showImageUploader && (
+        <ImageUploader
+          onDesignExtracted={handleDesignExtracted}
+          onClose={() => setShowImageUploader(false)}
+        />
+      )}
     </div>
   );
 };

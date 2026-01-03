@@ -179,4 +179,76 @@ export const uploadLogo = async (formData) => {
   return response.data;
 };
 
+// ===========================================
+// Design Reverse-Engineering APIs
+// ===========================================
+
+/**
+ * Analyze an uploaded image and convert to editable layers
+ * @param {string} imageData - Base64 encoded image data
+ * @param {Object} options - Analysis options
+ * @returns {Object} Blueprint with editable layers, fabric_json, color_palette
+ */
+export const analyzeImage = async (imageData, options = {}) => {
+  try {
+    const response = await mlApi.post('/analyze-image', {
+      image_data: imageData,
+      include_fabric_json: options.includeFabricJson ?? true,
+      detect_text: options.detectText ?? true,
+    }, {
+      timeout: 120000, // 2 minute timeout for analysis
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Image analysis error:', error);
+    throw error;
+  }
+};
+
+/**
+ * Check design analyzer status and capabilities
+ */
+export const getAnalyzerStatus = async () => {
+  try {
+    const response = await mlApi.get('/analyzer-status');
+    return response.data;
+  } catch (error) {
+    return { status: 'offline', error: error.message };
+  }
+};
+
+/**
+ * Generate an AI image using Hugging Face
+ * @param {Object} params - Generation parameters
+ */
+export const generateAIImage = async ({ prompt, platform = 'instagram', format = 'square', style = 'modern', model = 'sdxl' }) => {
+  try {
+    const response = await mlApi.post('/generate-image', {
+      prompt,
+      platform,
+      format,
+      style,
+      model,
+    }, {
+      timeout: 120000, // 2 minute timeout for image generation
+    });
+    return response.data;
+  } catch (error) {
+    console.error('AI image generation error:', error);
+    throw error;
+  }
+};
+
+/**
+ * Get available AI image models
+ */
+export const getImageModels = async () => {
+  try {
+    const response = await mlApi.get('/image-models');
+    return response.data;
+  } catch (error) {
+    return { models: [], error: error.message };
+  }
+};
+
 export default api;

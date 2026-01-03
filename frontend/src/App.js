@@ -18,6 +18,7 @@ import Editor from './pages/Editor';
 import Templates from './pages/Templates';
 import Projects from './pages/Projects';
 import BrandKit from './pages/BrandKit';
+import AnalyzePage from './pages/AnalyzePage';
 
 // Create React Query client
 const queryClient = new QueryClient({
@@ -41,6 +42,7 @@ function App() {
             <Route path="templates" element={<Templates />} />
             <Route path="projects" element={<Projects />} />
             <Route path="brand-kit" element={<BrandKit />} />
+            <Route path="analyze" element={<AnalyzePage />} />
           </Route>
           
           {/* Editor - Full screen */}
