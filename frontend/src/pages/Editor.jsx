@@ -2362,14 +2362,6 @@ const Editor = () => {
                 )}
               </div>
               
-              {/* API Key Notice for Image Generation */}
-              {generationType === 'image' && (
-                <div className="api-notice">
-                  <span>ℹ️</span>
-                  <p>AI Image requires HUGGINGFACE_API_KEY. Set it in environment variables for real image generation.</p>
-                </div>
-              )}
-              
               <div className="suggestions">
                 <span className="suggestions-label">Quick ideas:</span>
                 <div className="suggestion-chips">

@@ -1,6 +1,7 @@
 /**
  * AdGenesis - Premium AI Design Platform
  * Canva-inspired SaaS Application
+ * Developed by Vikas TG
  */
 
 import React from 'react';
@@ -13,6 +14,8 @@ import './index.css';
 import DashboardLayout from './layouts/DashboardLayout';
 
 // Pages
+import LandingPage from './pages/LandingPage';
+import AboutPage from './pages/AboutPage';
 import Dashboard from './pages/Dashboard';
 import Editor from './pages/Editor';
 import Templates from './pages/Templates';
@@ -36,6 +39,10 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <Router>
         <Routes>
+          {/* Public Pages */}
+          <Route path="/landing" element={<LandingPage />} />
+          <Route path="/about" element={<AboutPage />} />
+          
           {/* Dashboard routes */}
           <Route path="/" element={<DashboardLayout />}>
             <Route index element={<Dashboard />} />
