@@ -1,12 +1,11 @@
 """
 Real AI Image Generation Service
-Supports multiple backends: Hugging Face API, Replicate, or local Stable Diffusion
+Uses Hugging Face Inference API via the official huggingface_hub library
 """
 
 import os
 import io
 import base64
-import httpx
 import asyncio
 from typing import Optional, Dict, Any, List
 from PIL import Image
@@ -15,21 +14,25 @@ import json
 import hashlib
 from datetime import datetime
 
+# Import HuggingFace Hub Inference Client
+try:
+    from huggingface_hub import InferenceClient
+    HF_CLIENT_AVAILABLE = True
+except ImportError:
+    HF_CLIENT_AVAILABLE = False
+    print("⚠️ huggingface_hub not installed. Run: pip install huggingface_hub")
+
 # Configuration
 HUGGINGFACE_API_KEY = os.getenv("HUGGINGFACE_API_KEY", "")
 REPLICATE_API_KEY = os.getenv("REPLICATE_API_KEY", "")
 STABILITY_API_KEY = os.getenv("STABILITY_API_KEY", "")
 
-# Model endpoints
-HF_INFERENCE_ENDPOINT = "https://api-inference.huggingface.co/models"
-REPLICATE_ENDPOINT = "https://api.replicate.com/v1/predictions"
-
-# Available models
+# Available models - Tested and working with HF Inference API
 AVAILABLE_MODELS = {
     "sdxl": {
         "name": "Stable Diffusion XL",
         "hf_model": "stabilityai/stable-diffusion-xl-base-1.0",
-        "description": "High quality, detailed images",
+        "description": "High quality, detailed images (RECOMMENDED)",
         "best_for": ["product", "realistic", "detailed"]
     },
     "sdxl-turbo": {
@@ -38,16 +41,16 @@ AVAILABLE_MODELS = {
         "description": "Fast generation, good quality",
         "best_for": ["quick", "drafts", "iterations"]
     },
-    "playground": {
-        "name": "Playground v2.5",
-        "hf_model": "playgroundai/playground-v2.5-1024px-aesthetic",
-        "description": "Aesthetic, artistic images",
-        "best_for": ["artistic", "creative", "aesthetic"]
+    "sd-1-5": {
+        "name": "Stable Diffusion 1.5",
+        "hf_model": "runwayml/stable-diffusion-v1-5",
+        "description": "Classic stable diffusion",
+        "best_for": ["general", "reliable", "fast"]
     },
-    "flux": {
+    "flux-schnell": {
         "name": "FLUX.1-schnell",
         "hf_model": "black-forest-labs/FLUX.1-schnell",
-        "description": "Latest fast model",
+        "description": "Latest fast model from Black Forest Labs",
         "best_for": ["fast", "quality", "modern"]
     }
 }
@@ -129,59 +132,60 @@ class ImageGenerator:
     async def generate_with_huggingface(
         self,
         prompt: str,
-        model: str = "sdxl-turbo",
+        model: str = "sdxl",
         width: int = 1024,
         height: int = 1024,
         negative_prompt: str = "",
-        num_inference_steps: int = 4,
-        guidance_scale: float = 0.0,
+        num_inference_steps: int = 25,
+        guidance_scale: float = 7.5,
     ) -> Optional[bytes]:
-        """Generate image using Hugging Face Inference API"""
+        """Generate image using HuggingFace Hub InferenceClient"""
+        
+        if not HF_CLIENT_AVAILABLE:
+            raise ValueError("huggingface_hub library not installed. Run: pip install huggingface_hub")
         
         if not self.hf_api_key:
             raise ValueError("HUGGINGFACE_API_KEY not set. Please set it in environment variables.")
         
-        model_info = AVAILABLE_MODELS.get(model, AVAILABLE_MODELS["sdxl-turbo"])
+        model_info = AVAILABLE_MODELS.get(model, AVAILABLE_MODELS["sdxl"])
         model_id = model_info["hf_model"]
         
-        headers = {
-            "Authorization": f"Bearer {self.hf_api_key}",
-            "Content-Type": "application/json"
-        }
+        print(f"   🔗 Using model: {model_id}")
         
-        # Adjust parameters based on model
-        if "turbo" in model.lower():
-            num_inference_steps = 4
-            guidance_scale = 0.0
-        else:
-            num_inference_steps = 25
-            guidance_scale = 7.5
-        
-        payload = {
-            "inputs": prompt,
-            "parameters": {
-                "negative_prompt": negative_prompt,
-                "width": width,
-                "height": height,
-                "num_inference_steps": num_inference_steps,
-                "guidance_scale": guidance_scale,
-            }
-        }
-        
-        async with httpx.AsyncClient(timeout=120.0) as client:
-            response = await client.post(
-                f"{HF_INFERENCE_ENDPOINT}/{model_id}",
-                headers=headers,
-                json=payload
-            )
+        try:
+            # Create the inference client
+            client = InferenceClient(token=self.hf_api_key)
             
-            if response.status_code == 200:
-                return response.content
-            elif response.status_code == 503:
-                # Model is loading
-                raise RuntimeError("Model is loading. Please try again in a few seconds.")
-            else:
-                raise RuntimeError(f"Generation failed: {response.text}")
+            # Generate image using text_to_image
+            # Run sync call in thread pool since InferenceClient is sync
+            loop = asyncio.get_event_loop()
+            
+            def _generate():
+                return client.text_to_image(
+                    prompt,
+                    model=model_id,
+                    negative_prompt=negative_prompt if negative_prompt else None,
+                    width=min(width, 1024),
+                    height=min(height, 1024),
+                    num_inference_steps=num_inference_steps,
+                    guidance_scale=guidance_scale,
+                )
+            
+            # Run in executor to avoid blocking
+            image = await loop.run_in_executor(None, _generate)
+            
+            print(f"   ✅ Image generated: {image.size}")
+            
+            # Convert PIL Image to bytes
+            img_byte_arr = io.BytesIO()
+            image.save(img_byte_arr, format='PNG')
+            img_byte_arr.seek(0)
+            
+            return img_byte_arr.getvalue()
+            
+        except Exception as e:
+            print(f"   ❌ HF generation error: {e}")
+            raise RuntimeError(f"Image generation failed: {str(e)}")
     
     async def generate_with_stability(
         self,
@@ -231,7 +235,7 @@ class ImageGenerator:
         platform: str = "instagram",
         format: str = "post",
         style: str = "modern",
-        model: str = "sdxl-turbo",
+        model: str = "sdxl",  # Use SDXL as default - most reliable
         width: int = None,
         height: int = None
     ) -> Dict[str, Any]:
@@ -244,13 +248,13 @@ class ImageGenerator:
         
         # Get dimensions from format if not provided
         FORMAT_SIZES = {
-            "square": (1080, 1080),
-            "post": (1080, 1080),
-            "story": (1080, 1920),
-            "landscape": (1200, 628),
-            "portrait": (1080, 1350),
-            "cover": (1200, 628),
-            "banner": (1200, 300),
+            "square": (1024, 1024),
+            "post": (1024, 1024),
+            "story": (768, 1024),  # Adjusted for model limits
+            "landscape": (1024, 768),
+            "portrait": (768, 1024),
+            "cover": (1024, 576),
+            "banner": (1024, 256),
         }
         
         if width is None or height is None:
@@ -260,7 +264,7 @@ class ImageGenerator:
         width = (width // 8) * 8
         height = (height // 8) * 8
         
-        # Cap at 1024 for most models
+        # Cap at 1024 for HF models
         width = min(width, 1024)
         height = min(height, 1024)
         
@@ -273,7 +277,7 @@ class ImageGenerator:
         print(f"   Model: {model}")
         
         try:
-            # Try Hugging Face first
+            # Use Hugging Face if API key is set
             if self.hf_api_key:
                 image_bytes = await self.generate_with_huggingface(
                     prompt=enhanced_prompt,

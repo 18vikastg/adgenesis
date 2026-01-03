@@ -4,6 +4,7 @@ Serves the fine-tuned model that generates structured JSON design blueprints
 """
 
 import json
+import os
 import torch
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -13,6 +14,16 @@ from peft import PeftModel
 from pathlib import Path
 from typing import Optional, List, Dict, Any
 import random
+
+# Load environment variables from .env file
+try:
+    from dotenv import load_dotenv
+    load_dotenv(Path(__file__).parent.parent / ".env")
+    print("✓ Environment variables loaded from .env")
+except ImportError:
+    print("⚠ python-dotenv not installed. Install with: pip install python-dotenv")
+except Exception as e:
+    print(f"⚠ Could not load .env file: {e}")
 
 # Import design schema and templates
 from design_schema import (
@@ -61,8 +72,34 @@ from professional_design_generator import (
 from premium_design_generator import (
     generate_premium_design,
     premium_blueprint_to_fabric,
-    PREMIUM_PALETTES,
+    ALL_PALETTES,
 )
+
+# Import SMART design generator (PROMPT-BASED GENERATION)
+from smart_design_generator import (
+    generate_smart_design,
+    smart_blueprint_to_fabric,
+    analyze_prompt,
+)
+
+# Import CREATIVE DIRECTOR (TRUE PROMPT-DRIVEN GENERATION)
+from creative_director import (
+    CreativeDirector,
+    generate_creative_design,
+    blueprint_to_fabric as creative_blueprint_to_fabric,
+    PromptAnalyzer,
+)
+
+# Import GENERATIVE DESIGNER - Zero Templates, Pure Computation
+from generative_designer import (
+    generate_design as generative_generate_design,
+    blueprint_to_fabric as generative_blueprint_to_fabric,
+    extract_all_entities,
+    compute_prompt_metrics,
+)
+
+# Import AI Image Generator - Uses Hugging Face API
+from image_generator import ImageGenerator, image_generator
 
 # =============================================================================
 # APP SETUP
@@ -686,58 +723,261 @@ async def model_info():
 @app.post("/generate", response_model=DesignResponse)
 async def generate_design(request: DesignRequest):
     """
-    Generate a design blueprint from a prompt.
-    Returns both the blueprint and Fabric.js-ready JSON.
-    Uses PREMIUM design generator for agency-quality output.
+    Generate a UNIQUE design by DERIVING everything from the prompt.
+    Uses GENERATIVE DESIGNER - Zero templates, pure computation.
+    Every element is mathematically derived from the words in the prompt.
+    INCLUDES AI-generated images via Hugging Face API.
     """
     try:
-        # Try model first if available
-        blueprint = None
-        generation_method = "premium"
+        print(f"\n{'='*70}")
+        print(f"🎨 GENERATIVE DESIGNER - Zero Templates, Pure Computation")
+        print(f"   Prompt: {request.prompt}")
+        print(f"{'='*70}")
         
-        if model_loaded:
-            blueprint = generate_with_model(request)
-            if blueprint is not None:
-                generation_method = "trained_model"
+        # Step 1: Extract entities from prompt
+        entities = extract_all_entities(request.prompt)
+        print(f"\n📊 EXTRACTED ENTITIES:")
+        print(f"   Proper Nouns: {entities.get('proper_nouns', [])}")
+        print(f"   Objects: {entities.get('objects', [])[:5]}")
+        print(f"   Actions: {entities.get('actions', [])}")
+        print(f"   Numbers: {entities.get('numbers', [])}")
+        print(f"   Locations: {entities.get('locations', [])}")
         
-        # Use PREMIUM design generator (AGENCY QUALITY - Rich Graphics)
-        if blueprint is None:
-            print(f"\n🎨 Generating PREMIUM graphic design for: {request.prompt}")
-            blueprint = generate_premium_design(
-                prompt=request.prompt,
-                platform=request.platform,
-                format=request.format
-            )
-            generation_method = "premium"
+        # Step 2: Compute metrics
+        metrics = compute_prompt_metrics(request.prompt, entities)
+        print(f"\n📈 COMPUTED METRICS:")
+        print(f"   Verbosity: {metrics.get('verbosity', 0):.2f}")
+        print(f"   Energy: {metrics.get('energy', 0):.2f}")
+        print(f"   Commercial Intensity: {metrics.get('commercial_intensity', 0):.2f}")
+        print(f"   Brand Focus: {metrics.get('brand_focus', 0):.2f}")
+        print(f"   Locality: {metrics.get('locality', 0):.2f}")
+        print(f"   Visual Weight: {metrics.get('visual_weight', 0):.2f}")
+        print(f"   Warmth: {metrics.get('warmth', 0):.2f}")
         
-        # Convert to Fabric.js format using premium converter
-        fabric_json = premium_blueprint_to_fabric(blueprint)
+        # Step 3: Generate design
+        blueprint = generative_generate_design(
+            prompt=request.prompt,
+            platform=request.platform,
+            format=request.format
+        )
         
-        # Add generation metadata
-        blueprint["_generation_info"] = {
-            "method": generation_method,
-            "model_loaded": model_loaded,
-            "timestamp": str(Path(".")),
-            "quality": "premium_graphic"
-        }
+        # Step 4: Generate AI Image using Hugging Face API
+        ai_image_result = None
+        hf_api_key = os.getenv("HUGGINGFACE_API_KEY", "")
         
-        # Log which method was used
-        if generation_method == "trained_model":
-            print(f"✅ Design generated using TRAINED MODEL")
+        if hf_api_key:
+            print(f"\n🖼️ GENERATING AI IMAGE (Hugging Face API)...")
+            
+            # Create an image prompt based on the design
+            brand_name = entities.get('proper_nouns', ['Product'])[0] if entities.get('proper_nouns') else 'Product'
+            objects = entities.get('objects', [])[:3]
+            
+            # Build image generation prompt
+            image_prompt = f"Professional advertisement image for {brand_name}"
+            if 'coffee' in request.prompt.lower() or 'cafe' in request.prompt.lower() or 'shop' in request.prompt.lower():
+                image_prompt = f"Beautiful coffee shop interior with warm lighting, cozy atmosphere, professional photography, cafe aesthetic, {brand_name}"
+            elif 'fitness' in request.prompt.lower() or 'gym' in request.prompt.lower():
+                image_prompt = f"Modern gym equipment, fitness motivation, energetic atmosphere, professional sports photography, {brand_name}"
+            elif 'tech' in request.prompt.lower() or 'app' in request.prompt.lower() or 'software' in request.prompt.lower():
+                image_prompt = f"Sleek technology product, modern UI interface, futuristic design, professional tech photography, {brand_name}"
+            elif 'food' in request.prompt.lower() or 'restaurant' in request.prompt.lower():
+                image_prompt = f"Delicious food photography, appetizing presentation, restaurant quality, professional food styling, {brand_name}"
+            elif 'fashion' in request.prompt.lower() or 'clothing' in request.prompt.lower() or 'boutique' in request.prompt.lower():
+                image_prompt = f"Fashion product photography, elegant styling, boutique aesthetic, professional fashion shoot, {brand_name}"
+            elif objects:
+                image_prompt = f"Professional advertisement featuring {', '.join(objects)}, high quality product photography, {brand_name}"
+            
+            try:
+                ai_image_result = await image_generator.generate_ad_image(
+                    prompt=image_prompt,
+                    platform=request.platform,
+                    format=request.format,
+                    style="modern",
+                    model="sdxl"  # Using SDXL - most reliable
+                )
+                
+                if ai_image_result.get("success"):
+                    print(f"   ✅ AI Image generated successfully!")
+                    print(f"   📐 Size: {ai_image_result.get('width')}x{ai_image_result.get('height')}")
+                    
+                    # Add image to blueprint
+                    blueprint["ai_image"] = {
+                        "generated": True,
+                        "prompt": image_prompt,
+                        "model": ai_image_result.get("model"),
+                        "image_data": ai_image_result.get("image_data"),
+                        "width": ai_image_result.get("width"),
+                        "height": ai_image_result.get("height"),
+                    }
+                else:
+                    print(f"   ⚠️ AI Image generation failed: {ai_image_result.get('error')}")
+                    blueprint["ai_image"] = {
+                        "generated": False,
+                        "error": ai_image_result.get("error"),
+                    }
+            except Exception as img_error:
+                print(f"   ❌ AI Image error: {img_error}")
+                blueprint["ai_image"] = {
+                    "generated": False,
+                    "error": str(img_error),
+                }
         else:
-            print(f"🎨 Design generated using PREMIUM GRAPHIC SYSTEM (agency-quality)")
+            print(f"\n⚠️ AI IMAGE SKIPPED - No HUGGINGFACE_API_KEY")
+            print(f"   Set HUGGINGFACE_API_KEY in .env for AI image generation")
+            blueprint["ai_image"] = {
+                "generated": False,
+                "error": "HUGGINGFACE_API_KEY not set. Add it to .env file.",
+            }
+        
+        # Convert to Fabric.js format (include AI image if available)
+        fabric_json = generative_blueprint_to_fabric(blueprint)
+        
+        # Add AI image to fabric objects if generated
+        if blueprint.get("ai_image", {}).get("generated"):
+            img_data = blueprint["ai_image"]["image_data"]
+            width = blueprint["metadata"]["width"]
+            height = blueprint["metadata"]["height"]
+            
+            # Add image as background or featured element
+            fabric_json["objects"].insert(1, {
+                "type": "image",
+                "id": "ai_generated_image",
+                "left": width * 0.1,
+                "top": height * 0.15,
+                "width": width * 0.35,
+                "height": height * 0.35,
+                "src": f"data:image/png;base64,{img_data}",
+                "opacity": 0.95,
+                "selectable": True,
+                "evented": True,
+                "scaleX": 1,
+                "scaleY": 1,
+            })
+        
+        # Log generated design details
+        colors = blueprint.get("colors", {})
+        layout = blueprint.get("layout", {})
+        copy = blueprint.get("copy", {})
+        
+        print(f"\n🎨 DERIVED COLORS (from prompt words):")
+        print(f"   Base Hue: {colors.get('derived_hue', 0)}°")
+        print(f"   Accent: {colors.get('accent', 'N/A')}")
+        print(f"   Secondary: {colors.get('secondary', 'N/A')}")
+        print(f"   Background: {colors.get('bg_primary', 'N/A')}")
+        
+        print(f"\n📐 COMPUTED LAYOUT:")
+        print(f"   Alignment: {layout.get('alignment', 'N/A')}")
+        print(f"   Gradient Angle: {layout.get('gradient_angle', 0)}°")
+        print(f"   Zones: {list(layout.get('zones', {}).keys())}")
+        
+        print(f"\n✍️ GENERATED COPY (from prompt words):")
+        print(f"   Headline: {copy.get('headline', 'N/A').replace(chr(10), ' | ')}")
+        print(f"   Subline: {copy.get('subline', 'N/A')}")
+        print(f"   CTA: {copy.get('cta', 'N/A')}")
+        print(f"   Badge: {copy.get('badge', 'None')}")
+        print(f"{'='*70}\n")
         
         return DesignResponse(
             success=True,
             blueprint=blueprint,
             fabric_json=fabric_json,
-            message=f"Design generated successfully using {generation_method}"
+            message=f"Design generated by GENERATIVE DESIGNER with AI Image" if blueprint.get("ai_image", {}).get("generated") else "Design generated (AI Image requires HUGGINGFACE_API_KEY)"
         )
     
     except Exception as e:
         import traceback
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
+
+
+# =============================================================================
+# AI IMAGE GENERATION ENDPOINT
+# =============================================================================
+
+class ImageGenerationRequest(BaseModel):
+    """Request to generate an AI image"""
+    prompt: str = Field(..., description="Image description")
+    platform: str = Field(default="instagram", description="Target platform")
+    format: str = Field(default="square", description="Image format")
+    style: str = Field(default="modern", description="Style preset")
+    model: str = Field(default="sdxl", description="AI model to use: sdxl, sdxl-turbo, sd-1-5, flux-schnell")
+
+class ImageGenerationResponse(BaseModel):
+    """AI image generation response"""
+    success: bool
+    image_data: Optional[str] = None
+    image_url: Optional[str] = None
+    width: Optional[int] = None
+    height: Optional[int] = None
+    model: Optional[str] = None
+    error: Optional[str] = None
+    message: Optional[str] = None
+
+@app.post("/generate-image", response_model=ImageGenerationResponse)
+async def generate_ai_image(request: ImageGenerationRequest):
+    """
+    Generate an AI image using Hugging Face API.
+    Requires HUGGINGFACE_API_KEY to be set in environment.
+    """
+    try:
+        hf_api_key = os.getenv("HUGGINGFACE_API_KEY", "")
+        
+        if not hf_api_key:
+            return ImageGenerationResponse(
+                success=False,
+                error="HUGGINGFACE_API_KEY not set. Please add it to your .env file.",
+                message="Get your free API key at https://huggingface.co/settings/tokens"
+            )
+        
+        print(f"\n🖼️ AI IMAGE GENERATION REQUEST")
+        print(f"   Prompt: {request.prompt}")
+        print(f"   Model: {request.model}")
+        print(f"   Format: {request.format}")
+        
+        result = await image_generator.generate_ad_image(
+            prompt=request.prompt,
+            platform=request.platform,
+            format=request.format,
+            style=request.style,
+            model=request.model
+        )
+        
+        if result.get("success"):
+            print(f"   ✅ Image generated: {result.get('width')}x{result.get('height')}")
+            return ImageGenerationResponse(
+                success=True,
+                image_data=result.get("image_data"),
+                image_url=result.get("image_url"),
+                width=result.get("width"),
+                height=result.get("height"),
+                model=result.get("model"),
+                message="Image generated successfully using Hugging Face API"
+            )
+        else:
+            return ImageGenerationResponse(
+                success=False,
+                error=result.get("error", "Unknown error"),
+                message="Image generation failed"
+            )
+            
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return ImageGenerationResponse(
+            success=False,
+            error=str(e),
+            message="Image generation failed with exception"
+        )
+
+@app.get("/image-models")
+async def get_image_models():
+    """Get available AI image generation models"""
+    return {
+        "models": image_generator.get_available_models(),
+        "styles": list(image_generator.get_style_presets().keys()),
+        "api_configured": bool(os.getenv("HUGGINGFACE_API_KEY", ""))
+    }
+
 
 @app.get("/templates", response_model=TemplateListResponse)
 async def get_templates():

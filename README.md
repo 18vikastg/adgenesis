@@ -107,6 +107,9 @@ adgenesis/
 git clone https://github.com/18vikastg/adgenesis.git
 cd adgenesis
 
+# OPTIONAL: Set up Hugging Face API key for AI image generation
+./setup_env.sh  # Follow instructions to add your HF token
+
 # Run the complete startup script (starts all 3 services)
 ./run_all.sh
 ```
@@ -118,6 +121,9 @@ The script will automatically:
 - ✅ Open browser at http://localhost:3000
 
 **Press Ctrl+C to stop all services**
+
+> **💡 Note**: AI image generation requires a free Hugging Face API key.  
+> See [docs/HUGGINGFACE_SETUP.md](docs/HUGGINGFACE_SETUP.md) for detailed setup instructions.
 
 ### Manual Startup (Alternative)
 
@@ -148,6 +154,7 @@ npm start
 - Python 3.10+ with pip
 - Node.js 18+ and npm
 - Virtual environment already included in repo
+- **Optional**: [Hugging Face API key](docs/HUGGINGFACE_SETUP.md) for AI image generation
 
 ### First Time Setup
 
