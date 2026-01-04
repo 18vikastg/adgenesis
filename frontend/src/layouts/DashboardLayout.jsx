@@ -87,11 +87,11 @@ const DashboardLayout = () => {
   const navigate = useNavigate();
 
   const navItems = [
-    { path: '/', icon: <HomeIcon />, label: 'Home' },
-    { path: '/templates', icon: <TemplatesIcon />, label: 'Templates' },
-    { path: '/projects', icon: <ProjectsIcon />, label: 'Projects' },
-    { path: '/brand-kit', icon: <BrandIcon />, label: 'Brand Kit' },
-    { path: '/analyze', icon: <AnalyzeIcon />, label: 'Analyze Design' },
+    { path: '/dashboard', icon: <HomeIcon />, label: 'Home' },
+    { path: '/dashboard/templates', icon: <TemplatesIcon />, label: 'Templates' },
+    { path: '/dashboard/projects', icon: <ProjectsIcon />, label: 'Projects' },
+    { path: '/dashboard/brand-kit', icon: <BrandIcon />, label: 'Brand Kit' },
+    { path: '/dashboard/analyze', icon: <AnalyzeIcon />, label: 'Analyze Design' },
   ];
 
   const handleCreateDesign = () => {
@@ -104,7 +104,7 @@ const DashboardLayout = () => {
       <aside className={`sidebar ${sidebarExpanded ? 'expanded' : 'collapsed'}`}>
         {/* Logo */}
         <div className="sidebar-header">
-          <div className="logo" onClick={() => navigate('/')}>
+          <div className="logo" onClick={() => navigate('/dashboard')}>
             <div className="logo-icon">
               <SparklesIcon />
             </div>
@@ -131,7 +131,7 @@ const DashboardLayout = () => {
               key={item.path}
               to={item.path}
               className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
-              end={item.path === '/'}
+              end={item.path === '/dashboard'}
             >
               <span className="nav-icon">{item.icon}</span>
               {sidebarExpanded && <span className="nav-label">{item.label}</span>}

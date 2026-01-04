@@ -294,7 +294,7 @@ const Dashboard = () => {
       <section className="dashboard-section">
         <div className="section-header">
           <h2 className="section-title">Start designing</h2>
-          <a href="/templates" className="section-link">
+          <a href="/dashboard/templates" className="section-link">
             See all <ArrowRightIcon />
           </a>
         </div>
@@ -355,7 +355,7 @@ const Dashboard = () => {
       <section className="dashboard-section">
         <div className="section-header">
           <h2 className="section-title">Recent designs</h2>
-          <a href="/projects" className="section-link">
+          <a href="/dashboard/projects" className="section-link">
             See all <ArrowRightIcon />
           </a>
         </div>
@@ -417,7 +417,7 @@ const Dashboard = () => {
       <section className="dashboard-section">
         <div className="section-header">
           <h2 className="section-title">Featured templates</h2>
-          <a href="/templates" className="section-link">
+          <a href="/dashboard/templates" className="section-link">
             Browse all <ArrowRightIcon />
           </a>
         </div>
