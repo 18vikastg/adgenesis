@@ -40,11 +40,11 @@ function App() {
       <Router>
         <Routes>
           {/* Public Pages */}
-          <Route path="/landing" element={<LandingPage />} />
+          <Route path="/" element={<LandingPage />} />
           <Route path="/about" element={<AboutPage />} />
           
           {/* Dashboard routes */}
-          <Route path="/" element={<DashboardLayout />}>
+          <Route path="/dashboard" element={<DashboardLayout />}>
             <Route index element={<Dashboard />} />
             <Route path="templates" element={<Templates />} />
             <Route path="projects" element={<Projects />} />
