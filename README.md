@@ -255,6 +255,8 @@ npm start
    - Edit in the canvas editor
    - Export as PNG/JPG/SVG
 
+> 📖 **New to AdGenesis?** Check out the complete [User Guide](USER_GUIDE.md) for step-by-step instructions!
+
 ### **Available Routes**
 
 | Route | Description |
@@ -472,6 +474,7 @@ python test_blueprint_generation.py
 
 ## 📚 Documentation
 
+- **[USER_GUIDE.md](USER_GUIDE.md)** - Complete user guide for end users 📖
 - **[LOCAL_SETUP.md](docs/LOCAL_SETUP.md)** - Detailed setup instructions
 - **[API.md](docs/API.md)** - Complete API documentation
 - **[ARCHITECTURE.md](docs/ARCHITECTURE.md)** - System architecture
