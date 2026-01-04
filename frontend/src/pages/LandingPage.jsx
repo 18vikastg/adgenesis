@@ -180,15 +180,15 @@ const LandingPage = () => {
           </Link>
 
           <div className={`nav-links ${mobileMenuOpen ? 'open' : ''}`}>
-            <Link to="/templates" className="nav-link">Templates</Link>
-            <Link to="/features" className="nav-link">Features</Link>
-            <Link to="/pricing" className="nav-link">Pricing</Link>
+            <Link to="/dashboard/templates" className="nav-link">Templates</Link>
+            <Link to="/about" className="nav-link">Features</Link>
+            <Link to="/about" className="nav-link">Pricing</Link>
             <Link to="/about" className="nav-link">About</Link>
           </div>
 
           <div className="nav-actions">
-            <Link to="/" className="nav-signin">Sign in</Link>
-            <Link to="/" className="nav-cta">
+            <Link to="/dashboard" className="nav-signin">Sign in</Link>
+            <Link to="/dashboard" className="nav-cta">
               Get Started Free
               <ArrowRightIcon />
             </Link>
@@ -234,7 +234,7 @@ const LandingPage = () => {
             <div className="hero-cta-group">
               <button 
                 className="hero-cta primary"
-                onClick={() => navigate('/')}
+                onClick={() => navigate('/dashboard')}
               >
                 Start Designing
                 <ArrowRightIcon />
@@ -332,7 +332,7 @@ const LandingPage = () => {
           </div>
 
           <div className="templates-cta">
-            <Link to="/templates" className="browse-templates-btn">
+            <Link to="/dashboard/templates" className="browse-templates-btn">
               Browse all templates
               <ArrowRightIcon />
             </Link>
@@ -372,7 +372,7 @@ const LandingPage = () => {
               </ul>
               <button 
                 className="ai-cta"
-                onClick={() => navigate('/')}
+                onClick={() => navigate('/editor')}
               >
                 Try AI Generator
                 <ArrowRightIcon />
@@ -464,7 +464,7 @@ const LandingPage = () => {
             <p>Join thousands of creators who trust AdGenesis for their design needs.</p>
             <button 
               className="cta-button"
-              onClick={() => navigate('/')}
+              onClick={() => navigate('/dashboard')}
             >
               Start Creating for Free
               <ArrowRightIcon />
